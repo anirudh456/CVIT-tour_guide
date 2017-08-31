@@ -1,0 +1,14 @@
+#+title:  Conformance of Implementation's spec to the Client's spec
+
+This document should contain how much the [[../imp/spec/index.org][implementation's
+spec]] complies with the [[../req/index.org][client's requirements spec]].
+
+
+* Conformance Summary
+
+|----------+----------+-------------+----------+---|
+| Req Spec | Imp Spec | Conformance | Evidence |   |
+|----------+----------+-------------+----------+---|
+|          |          |             |          |   |
+|----------+----------+-------------+----------+---|
+

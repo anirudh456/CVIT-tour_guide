@@ -1,0 +1,875 @@
+#+title:  Data Model for User Directory Application
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-12 Mon]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../../org-templates/level-2.org
+#+options: ^:nil
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+LATEX: Literal LaTeX code for export
+
+* Introduction
+  In this application we have made a directory of users and their
+  relation with various entities like name,email and role.
+  Also many operations like add,delete,update,login and logout can be carried out in the application.
+
+* Objective of the Data Model
+  The application is abstracted as the data model. The model
+  captures: the entities that comprise the system, relations and constraints
+  between these entities and operations that entail a change in the state of
+  the system.
+
+
+* Objective of using Alloy
+  While building a Data Model for our application we came across many
+  requirements and operations that must be satisfied.  For satisfying
+  these requirements and operations we have made many assertions that
+  must hold true.  Hence we have used Alloy,a relational modelling
+  language to make a model which satisfies all these assertions.
+
+
+* Requirements
+  The relations between the entities and the the following code in
+  alloy is given below
+
+** Notation
+  There is a certain notation that is used in Alloy to define
+  relations of the data model.
+
+  If =A= is a set, then
+    1. =one A= denotes exactly one element of =A=.
+    2. =lone A= denotes at most one element of =A=.
+    3. =some A= denotes  one or more elements of =A=
+    4. =set A=  denotes zero or more elements of =A=.
+    5. =~A= denotes negation of =A=. 
+    6. If =B= is a relation in =A= then =A.B= is the set of objects
+       connected by relation =B= in =A=.
+    7. =A -> B= denotes a relation /from/ =A= /to/ =B=.
+       
+       #+BEGIN_EXAMPLE
+       
+       u->u.(State.role)
+       
+       (State.role)=set of Object Role defined in =State=
+       u.(State.role)=set of Object Role defines in =State= but are only related to u
+       u->u.(State.role) is a relation between user and its role
+       
+       #+END_EXAMPLE
+
+** Definition and declaration
+   User,Name,Email,Role,Session are the diffrent entities in this
+   model.  There are only 2 types of role possible: =Role_Admin= and
+   =Role_User=.
+   
+   In alloy we use =sig= to declare an object(we can also think of it
+   as a set).  Here we need to declare objects called
+   User,Name,Email,Role,Session(they are like sets) for our
+   application.  [[../../req/index.org::User][Implementation of User]]
+   #+name: webapp
+   #+BEGIN_SRC alloy
+    abstract sig User{}
+   #+END_SRC
+
+   [[../../req/index.org::Name][Implementation of Name]]
+   #+name: webapp
+   #+BEGIN_SRC alloy
+    abstract sig Name{}
+   #+END_SRC
+
+   [[../../req/index.org::Email][Implementation of Email]]
+   #+name: webapp
+   #+BEGIN_SRC alloy
+   abstract sig Email{}
+   #+END_SRC
+
+   [[../runtime/objects/session/index.org][Implementation of Session]]
+   #+name: webapp
+   #+BEGIN_SRC alloy
+   abstract sig Session{}
+   #+END_SRC
+  
+   =extends Role= makes sure that
+   =Role_Admin= and =Role_User= are *disjoint* sets of Role.
+   
+   [[../../req/index.org::Role][Implementation of Role]]
+   #+name: webapp 
+   #+BEGIN_SRC alloy
+   abstract sig Role{}
+   one sig Role_User,Role_Admin extends Role{}
+   #+END_SRC
+ 
+   To do operations on the model we must define =State= of the
+   model.Each opeartion then corresponds to change from one state to
+   another.  Objects must be defined inside the state hence we create
+   a relation between =State= and the objects using =liveUser=,
+   =liveName=, =liveSession= and =liveEmail=.
+   #+name: webapp
+   #+BEGIN_SRC alloy
+    sig State{
+    liveUser: set User,
+    liveName :set Name,
+    liveEmail :set Email,
+    liveSession : set Session,
+
+   #+END_SRC 
+
+
+
+** User
+
+  User is main entity in the model. The interaction of a user in the
+  State is defined by the requirements below.
+
+*** Unique Email 
+    Each user must have one email 
+    #+name: webapp
+    #+BEGIN_SRC alloy   
+    email: liveUser -> one liveEmail,
+    #+END_SRC
+
+*** Unique Name  
+    Each user must have one name
+    #+name: webapp
+    #+BEGIN_SRC alloy 
+     name: liveUser -> one liveName,  
+    #+END_SRC
+*** Multiple Roles
+    Each user can be =admin= or =user= or both  
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    role: liveUser -> some Role,
+    #+END_SRC
+
+*** Multiple Sessions
+    Each user can be in multiple sessions
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    session : liveUser -> some liveSession,
+    #+END_SRC
+** Role
+
+  Different privileges for accessing the system is maintained by roles.There are two roles, =user= and =admin=
+
+*** Multiple Users
+    Each role can be assigned to multiple users.
+  #+name: webapp
+  #+BEGIN_SRC alloy 
+    userOfRole: Role -> set liveUser,
+  #+END_SRC
+*** Multiple Sessions
+    Each role can be assigned to multiple sessions.
+   #+name: webapp
+   #+BEGIN_SRC alloy 
+    roleinSession : Role ->some liveSession,
+  #+END_SRC
+** Name
+   Name is one of the properties of a user.
+*** Multiple Users
+    In our model multiple users can be assigned to a given name.
+    #+name: webapp
+    #+BEGIN_SRC alloy 
+    userOfName: liveName -> some liveUser,
+    #+END_SRC
+
+** Email 
+   Email is one of the characteristic properties of a user.
+*** Uniqueness of User
+    Each email is assigned to only one User.Hence uniqueness of the user can by defined by his email.
+    #+name: webapp
+    #+BEGIN_SRC alloy 
+    userOfEmail: liveEmail ->one liveUser,
+    #+END_SRC
+
+** Session
+   Each login is considered as a session .Each =session= has a unique =user= and a unique =role=.
+*** Unique User
+    There is only one user in each session.
+    #+name: webapp
+    #+BEGIN_SRC alloy 
+    userofSession: liveSession -> one liveUser,
+    #+END_SRC
+*** Unique Role
+    There is only one role in each session
+    #+name: webapp
+    #+BEGIN_SRC alloy 
+    roleofSession : liveSession -> one Role,
+    #+END_SRC
+** Update User
+   Specifically for the update operations we must have additional relations between  
+   the objects and the State.
+   
+   There should be atleast one email in the Email set so that a user can be updated with that email.Similarly for name.
+ #+name: webapp
+ #+BEGIN_SRC alloy 
+   
+   updateName : lone (Name - liveName),
+   updateEmail : lone (Email - liveEmail)
+   }
+ #+END_SRC
+
+** Facts 
+   Relations alone wont make our model work precisely hence we need to make some statements which are al
+   ways true.These are called =facts= 
+   
+   All the relations should be surjective.It means that, if the =user= is related to an =email=, then the =email= should be 
+   related to the same =uesr=. 
+ #+name: webapp
+ #+BEGIN_SRC alloy   
+   { 
+   role=~userOfRole
+   name=~userOfName
+   email=~userOfEmail
+   session =~userofSession
+   roleofSession=~roleinSession
+   }
+ #+END_SRC
+
+   All the names in the =Name= set should be either in =liveName= or =updateName= sets.Similarly all the emails in =Email= set 
+   should be in the =liveEmail= or =updateEmail= sets.
+ #+name: webapp
+ #+BEGIN_SRC alloy   
+   fact allNameLive{State.liveName+State.updateName = Name}
+   fact allEmailLive{State.liveEmail+State.updateEmail = Email}
+ #+END_SRC
+
+   For every session in =liveSession= set,the role of the =Session= should be a subset of the set of roles of the =user=
+   in that =session=.
+ #+name: webapp
+ #+BEGIN_SRC alloy   
+   fact sameRoleinSession{ all s :State.liveSession, u: s.(State.userofSession) | s.(State.roleofSession) in u.(State.role) }  
+  #+END_SRC
+
+   For any two sessions in =liveSession= set,they are related to different users or if they are related to the same user , 
+   then the role of the user in the two sessions is different.
+ #+name: webapp
+ #+BEGIN_SRC alloy   
+   fact noSameSession{all u:State.liveUser , s1:u.(State.session) ,s2:u.(State.session) | 
+   s1 != s2 implies s1.(State.userofSession) != s2.(State.userofSession) or s1.(State.roleofSession) != s2.(State.roleofSession) }
+ #+END_SRC
+** Meta Model
+ 
+  meta model  showing the relations between different entities in our application.(diagram 1.1) 
+  #+ATTR_HTML: width="1200px"
+  [[./diagrams/metamodel.jpg]]
+  diagram 1.1
+
+* Operations 
+CRUD operations are the operations we are gonna use on our model   
+
+Each operation is performed on an entity instance or an
+entity-set which is the =State= of the model.   
+These operation may take additional parameters.
+
+ - C  create a user         
+ - R  read   a user 
+ - U  update a user      
+ - D  delete a user
+
+** Show User
+   Shows all Users and their relations in the current state.diagram 
+   (diagram 1.2 shows the model of the state with users and their relations.)
+   #+name:  webapp
+   #+BEGIN_SRC alloy
+
+   pred showUsers{}
+   run showUsers for 4 but exactly 1 State
+
+   #+END_SRC
+   
+   #+ATTR_HTML: width="800px"
+   [[./diagrams/showusers.jpg]]
+   diagram 1.2
+
+** login
+    Login adds a session to the State and makes a user related to it.
+   
+*** Operation
+    Here we give the input of 2 states, =s= is the initial state and =s=' is the final sate and
+    the session =ses= which must be added.
+   #+name: webapp
+   #+BEGIN_SRC alloy
+    pred login(s,s':State , ses : Session ){
+   #+END_SRC
+	
+    The necessary preconditions that must be satisfied by the state and these will be the 
+    necessary guards on the operation.
+    The session =ses= that must be added should be present in the final state after adding the session.
+    #+name: webapp
+   #+BEGIN_SRC alloy
+    ses in s'.liveSession
+
+   #+END_SRC
+
+    Here , we can perform this operation in simple way thinking that if =s= is the initial state and =s=' is the
+    final state ,then login of a user in the final state is same as defining an initial state so that we are logging out the user from final state.
+    *For example, x = y +z is also same as x - z = y i.e, both are the same equations.*
+     
+    Then we make changes in the relations of =s=' corresponding to =s= which is like a Engine to the operationns.
+   
+    1. Add a new relation between user and session in final state =s='.
+    2. Add a new role for the session in final state =s='.
+    3. If the user in the newly created session =ses= in final state =s=' is only in one session i.e =ses=,then add a new user to =s='.
+       Otherweise,it means that one of the users in some session logged in into another session with another role.
+    4. Add the newly created session to liveSession set in final state =s=' .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    s.userofSession = s'.userofSession - ses -> ses.(s'.userofSession)
+    s.roleofSession = s'.roleofSession - ses -> ses.(s'.roleofSession)
+	
+	
+    #(ses.(s'.userofSession)).(s'.session) = 1=> ( s.liveUser=s'.liveUser - ses.(s'.userofSession)
+    and (#(ses.(s'.userofSession).(s'.name)).(s'.userOfName) = 1 => 
+    s.liveName = s'.liveName -ses.(s'.userofSession).(s'.name)
+    else
+    s.liveName = s'.liveName ) )
+    else s.liveUser=s'.liveUser 
+
+    s.liveSession = s'.liveSession - ses
+    }
+    #+END_SRC
+  
+*** Result
+     Hence we added a session.(diagram 2.1 and 2.2 show the model of the state before and after login of a user.)
+     To run this in alloy, use
+     #+name: webapp
+     #+BEGIN_SRC alloy
+      run login for 4 but exactly 2 User,exactly 3 Session,exactly 2 State
+     
+     #+END_SRC
+
+     *Before login*
+     #+ATTR_HTML: width="800px"
+     [[./diagrams/loginbefore.jpg]]
+     diagram 2.1
+
+     *After login*
+     [[./diagrams/loginafter.jpg]]
+     diagram 2.2
+
+** Delete User
+    Deletes a user from the State along with the Email and Name related to him .
+
+*** Operation
+    Here we give the input of the 2 States, =s= the initial state and =s=' as the final state 
+    and the user =u= which must be deleted.
+
+    We first check the necessary pre-conditions that must be satisfied by state =s= and these will be 
+    the necessary gaurds on the operation.
+
+    1. The user to be deleted should be in the liveUser set of the state =s= .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    
+    pred deleteUser[s,s':State,u:User]{
+    u in s.liveUser  
+    #s.updateEmail=0 and #s.updateName=0
+
+    s'.updateName = s.updateName
+    s'.updateEmail = s.updateEmail
+    
+    #+END_SRC
+
+    Then we make changes in all the relations which would be affected by this operation.
+    This will the Engine of the operation.
+
+    1. Remove the =name= relation of the user in the final state =s=' .
+    2. Remove the =email= relation of the user in the final state =s=' .
+    3. Remove the =role= relation of the user in the final state =s=' .
+    4. Delete the session of the user.
+    5. Delete the email from the =liveEmail= set.
+    6. If the name is not shared by other users,then delete the name from the =liveName= set.
+    7. Delete the user from the =liveUser= set in the final state =s=' .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    
+    s'.name = s.name - u->u.(s.name)
+    s'.email = s.email - u->u.(s.email)
+    s'.role = s.role - u->u.(s.role) 
+    s'.roleofSession = s.roleofSession - u.(s.session) -> (u.(s.session)).(s.roleofSession)
+    s'.session = s.session - u -> u.(s.session)
+   
+    s'.liveEmail = s.liveEmail - u.(s.email)
+    s'.liveSession = s.liveSession - u.(s.session)
+
+    #(u.(s.name)).(s.userOfName) = 1 => 
+    s'.liveName = s.liveName - u.(s.name)
+    else
+    s'.liveName = s.liveName  
+
+    s'.liveUser = s.liveUser - u
+    }
+    #+END_SRC
+
+*** Result
+     Hence we deleted a user.(diagram 3.1 and 3.2 show the model of the state before and after deletion of a user.)
+     To run this in alloy use 
+     #+name: webapp
+     #+BEGIN_SRC alloy
+
+     run deleteUser for 4 but exactly 4 User,exactly 4 Name,exactly 2 State
+     run deleteUser for 4 but exactly 4 User,exactly 1 Name,exactly 2 State    
+
+     #+END_SRC
+     *Before User is deleted*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/deletebefore.jpg]]
+     diagram 3.1
+
+     *After User is deleted*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/deleteafter.jpg]]
+     diagram 3.2
+
+** Add User
+    A user is added with the default role =user= or =admin=.
+    Added a user to the State along with the Email, Name and Role related to him .
+
+*** Operation
+    Here we give the input of the 2 States, =s= the initial state and =s=' as the final state 
+    and the user =u= which must be added.
+
+    Here , we can perform this operation in simple way thinking that if =s= is the initial state and =s=' is the
+    final state ,then adding a user to the final state is same as defining an initial state so that we are deleting a user from final state.
+    *For example, x = y +z is also same as x - z = y i.e, both are the same equations.*
+
+    We first check the necessary pre-conditions that must be satisfied by state =s= and these will be 
+    the necessary gaurds on the operation.
+    1. The user to be added should be present in the =liveUser= set of the final state =s=' .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    
+    pred addUser[s,s':State,u:User,r:Role]{
+    u in s'.liveUser  
+    r in u.(s'.role)
+    #s'.updateEmail=0 and #s'.updateName=0
+
+    s'.updateName = s.updateName
+    s'.updateEmail = s.updateEmail
+    
+    #+END_SRC
+
+    Then we make changes in all the relations of =s'= corresponding to =s= which would be affected by this operation.
+    This will the Engine of the operation.
+    1. Add the relation =name= to the user in the final state =s=' .
+    2. Add the relation =email= to the user in the final state =s=' .
+    3. Add the relation =role= to the user in the final state =s=' .
+    4. Add the role to the session.
+    5. Add email to the =liveEmail= set .
+    6. Add session to the =liveSession= set.
+    7. If the name is not present in the =liveName= set, add it.
+    8. Add the user to the =liveUser= set.
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    
+    s.name = s'.name - u->u.(s'.name)
+    s.email = s'.email - u->u.(s'.email)
+    s.role = s'.role - u->u.(s'.role) 
+    s.roleofSession = s'.roleofSession - u.(s'.session) -> (u.(s'.session)).(s'.roleofSession)
+    s.session = s'.session - u -> u.(s'.session)
+   
+   
+    s.liveEmail = s'.liveEmail - u.(s'.email)
+    s.liveSession = s'.liveSession - u.(s'.session)
+    #(u.(s.name)).(s.userOfName) = 1 => 
+    s.liveName = s'.liveName - u.(s'.name)
+    else
+    s.liveName = s'.liveName  
+
+    s.liveUser = s'.liveUser - u
+    }
+    
+
+    #+END_SRC
+
+*** Result
+     Hence we added a user.(diagram 4.1 and 4.2 show the model of the state before and after addition of the user)
+     To run this in alloy use 
+     #+name: webapp
+     #+BEGIN_SRC alloy
+     run addUser for 4 but exactly 2 State
+     #+END_SRC
+     
+     *Before User is added*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/adduserbefore.jpg]]
+     diagram 4.1
+     
+     *After User is added*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/adduserafter.jpg]]
+     diagram 4.2
+
+** Update User
+   
+    Updates the email or name of the given user.
+
+    A user is updated with =updateEmail= or =updateName= or both.
+*** Operation
+    Here we give the input of the 2 States, =s= the initial state and =s=' as the final state 
+    and the user =u= which must be added.
+
+    We first check the necessary pre-conditions that must be satisfied by state =s= and these will be 
+    the necessary gaurds on the operation.
+    1. The =updateName= or =updateEmail= set should be atleast one to make an update to the user.
+    2. The role , session and role in the session should be the same before and after the update.
+    #+name: webapp
+    #+BEGIN_SRC alloy
+
+    pred updateUser[s,s':State,u:User]{
+    u in s.liveUser and s.liveUser= s'.liveUser
+    #s.updateName=1 or #s.updateEmail=1
+    s'.role = s.role
+    s'.session = s.session
+    s'.roleofSession = s.roleofSession
+
+    #+END_SRC
+
+    Then we make changes in all the relations of =s=' corresponding to =s= which would be affected by this operation.
+    This will the Engine of the operation.
+    1. If =updateName= set has one name element, then add the name to the user and delete the previous name of the user.Also
+       add the new name to the =liveName= set and delete the previous name from the set.
+    2. Similarly with =updateEmail= .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+
+    #s.updateName=1 => 
+    s'.name = s.name + u->s.updateName - u->u.(s.name) 
+	and s'.updateName = u.(s.name)
+	and s'.liveName = s.liveName + s.updateName - u.(s.name)
+    else s'.name = s.name 
+	and s'.updateName=s.updateName
+	and s'.liveName = s.liveName 
+
+    #s.updateEmail =1 =>
+    s'.email = s.email + u->s.updateEmail - u->u.(s.email)
+	and s'.updateEmail = u.(s.email)
+	and s'.liveEmail = s.liveEmail + s.updateEmail - u.(s.email)
+    else s'.email = s.email 
+	and s'.updateEmail=s.updateEmail
+	and s'.liveEmail = s.liveEmail
+
+ 
+   }
+    #+END_SRC
+
+*** Result
+     Hence we updated the email or name of the user.(Diagram 5.1 amd 5.2 show the model of the state before and after updating the user.)
+     To run this in alloy use 
+     #+name: webapp
+     #+BEGIN_SRC alloy
+     run updateUser for 4 but exactly 2 User,exactly 2 State
+     #+END_SRC
+
+     *Before updating User*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/updateuserbefore.jpg]]
+    diagram 5.1
+     
+     *After updating User*
+     #+ATTR_HTML: width="1200px"
+     [[./diagrams/updateuserafter.jpg]]
+     diagram 5.2
+
+
+** Logout
+    Dletes a session from the State.If the user related to the deleted session is in any of the other sessions, then the user is not removed from the state, Else the user along with his relation 
+    such as Email,Name(If no other user in the state has its name as this one) are also removed.
+*** Operation
+    Here we give the input of two states, =s= is the initial state and =s=' is the final state
+    and the session =ses= that is to be deleted.
+
+    We first check the necessary pre-conditions that must be satisfied by state =s= and these will be 
+    the necessary gaurds on the operation.
+    1. The session =ses= should be present in the set of =liveSession= in the initial state =s= .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    pred logout(s,s':State , ses : Session ){
+
+	ses in s.liveSession
+    
+    #+END_SRC
+
+    Then we make changes in all the relations which would be affected by this operation.
+    This will the Engine of the operation.
+
+    1. Remove the relation between user and role of the session in the final sate =s=' .
+    2. If the user is also not present in other sessions, then remove the user,name of the user from their respective sets in the final state =s=' .
+    3. Remove the session from the =liveSession= set .
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    s'.userofSession = s.userofSession - ses -> ses.(s.userofSession)
+    s'.roleofSession = s.roleofSession - ses -> ses.(s.roleofSession)
+	
+    #(ses.(s.userofSession)).(s.session) = 1=> ( s'.liveUser=s.liveUser - ses.(s.userofSession)
+    and (#(ses.(s.userofSession).(s.name)).(s.userOfName) = 1 => 
+    s'.liveName = s.liveName -ses.(s.userofSession).(s.name)
+    else
+    s'.liveName = s.liveName ) )
+    else s'.liveUser=s.liveUser 
+
+    s'.liveSession = s.liveSession - ses
+   }
+    
+    #+END_SRC
+*** Result
+    Hence we deleted a session.(diagram 6.1 and 6.2 show the model of the state before and after loggin out)
+    To run this in alloy , use
+    #+name: webapp
+    #+BEGIN_SRC alloy
+    run logout for 4 but exactly 2 User,exactly 3 Session,exactly 2 State
+    
+    #+END_SRC
+    *Before logout*
+    [[./diagrams/logoutbefore.jpg]]
+    diagram 6.1
+
+    *After logout*
+    [[./diagrams/logoutafter.jpg]]
+    diagram 6.2
+
+* Check And Assertions
+  Now that we have a Data Model we must keep specific tests that it must pass to check whether the 
+  model satisfies the our *requirement*
+  
+** Assertions
+  1.If 2 Users have same email then both the users must be same.(True)
+   #+name: webapp
+   #+BEGIN_SRC alloy
+   
+   assert userSameEmail {all u,u':User|u.(State.email)=u'.(State.email) => u=u'}
+   check userSameEmail for 4 but exactly 1 State
+   
+   #+END_SRC
+  No Counter Example found.
+
+  2.If 2 Users have same name then both the users must be same.(False)
+    (refer diagram 2.1 for counterexample)
+   #+name: webapp
+   #+BEGIN_SRC alloy
+
+   assert userSameName {all u,u':User|u.(State.name)=u'.(State.name) => u=u'}
+   check userSameName for 4 but exactly 1 State
+   
+   #+END_SRC
+  *Counterexample*
+  #+ATTR_HTML: width="1200px"
+  [[./diagrams/userSameName.jpg%0A][./diagrams/userSameName.jpg]]
+  diagram 2.1
+
+  3.Any User can be deleted.(True)
+   #+name: webapp
+   #+BEGIN_SRC alloy
+
+   deleteOkay: check {all s,s':State,u:User | deleteUser[s,s',u] => s'.liveUser = s.liveUser -u }
+
+   #+END_SRC
+  No Counter Example found.
+
+  4.Updating only Email of a User. 
+   4.1 Name might update.(False)
+       (view diagram 2.2.1 and 2.2.2 for counterexample which shows the model of the state before and after updating.)
+    #+name: webapp
+    #+BEGIN_SRC alloy
+
+    assert updateEmail {all u:User,s,s':State | updateUser[s,s',u] => u.(s.email) != u.(s'.email) }
+    check updateEmail for 5 but exactly 2 State
+
+   #+END_SRC
+   
+   *Counterexample - Name is changed and Email is not changed*
+   *Before*
+   #+ATTR_HTML: width="1200px"
+   [[./diagrams/updateuserbefore.jpg]]
+   diagram 2.2.1
+
+   *After*
+   #+ATTR_HTML: width="1200px"
+   [[./diagrams/updateuserafter.jpg]]
+   diagram 2.2.2
+  
+   4.2 Name doesn't update.(True)
+    #+name: webapp
+    #+BEGIN_SRC alloy
+
+    assert updateEmailOnly {all u:User,s,s':State | no s.updateName and updateUser[s,s',u] => u.(s.email) != u.(s'.email) }
+    check updateEmailOnly for 5 but exactly 2 State
+
+   #+END_SRC
+   No Couter Example found.
+      
+
+* Static Model with Session 
+ - In this model we have approached data-modeling with the perspective of OOP
+ - Where every objects has fields with each having relations defined in the Universal Set
+ - But without any constrains
+
+#+name: OOP
+#+BEGIN_SRC alloy  
+
+//This is an Object Oriented Relational Model formed of the web app short course 
+//Before this no object in this model had any relations defined in them but now 
+//because we see it from an  object oriented perspective we find many changes in our model 
+//Advantage Of using this model 
+//1.This gives a better outlook with the real world  objects (Less towards the data-base side)
+//2.As relations are prefined we can have more than one model in the same universe 
+
+//Universal Set contains the following
+
+abstract sig User{
+name:lone Name,
+email:lone Email,
+role:set Role,
+session:lone Session
+}
+
+abstract sig Name{
+userOfName:set User
+}
+
+abstract sig Email{
+userOfEmail:lone User
+}
+
+abstract  sig Session{
+userInSession:lone User,
+roleInSession:lone Role
+}
+
+abstract sig Role{
+userOfRole:set User,
+sessionOfRole:set Session}
+
+one sig Role_User,Role_Admin extends Role{}
+   
+//Bijective relations between Objects 
+fact { 
+   role=~userOfRole
+   name=~userOfName
+   email=~userOfEmail
+   session =~userInSession
+   roleInSession=~sessionOfRole
+   }
+
+//Role and Session to be correctly Mapped
+fact PossibleRolesInSession {all s:State,logged:Session,u:User |
+          u in s.liveUser and logged in s.liveSession and u in logged.userInSession => 
+          u.role = logged.roleInSession}
+
+
+sig State{
+    liveUser: set User,
+    liveName :set Name,
+    liveEmail :set Email,
+	liveRole: set Role,
+	liveSession : set Session,
+   }
+
+// Cardinality constrains in the specific state
+fact {all u:User | u in State.liveUser =>one u.email } 
+fact {all u:User | u in State.liveUser =>one u.name } 
+fact {all u:User | u in State.liveUser =>some u.role } 
+fact {all e:Email | e in State.liveEmail => one e.userOfEmail } 
+fact {all n:Name | n in State.liveName => one n.userOfName } 
+fact {all logged:Session | logged in State.liveSession => one logged.userInSession and one logged.roleInSession }  
+
+
+//all relations inside the State only
+fact { all u:User,n:Name,s:State| n in u.name => u in s.liveUser and n in s.liveName} 
+fact { all u:User,e:Email,s:State| e in u.email => u in s.liveUser and e in s.liveEmail} 
+fact { all u:User,r:Role,s:State| r in u.role => u in s.liveUser and r in s.liveRole} 
+fact { all u:User,logged:Session,s:State| logged in u.session => u in s.liveUser and logged in s.liveSession} 
+fact { all r:Role,logged:Session,s:State| r in logged.roleInSession => r in s.liveRole and logged in s.liveSession} 
+
+pred show{} 
+run show for 4 but exactly 1 State, exactly 3 User,exactly 2 Email,exactly 4 Name,exactly 2 Session
+
+#+End_SRC 
+
+* Static Model
+#+name: StaticModel
+#+BEGIN_SRC alloy 
+
+ // This is a Static Data Model for the web-app-short-course in Alloy.
+// It contains a User and its relations with Name,Email,Role,Session(which can be admin,user only).
+// Using the State Object we can see diffrent state of the web-app when diffrent operations are applied on it
+module webAppShortCourse
+
+// The  Objects in the model 
+abstract sig User{
+role :some Role,
+name:one Name,
+email:one Email
+}
+
+abstract sig Name{
+userOfName:some  User
+}
+
+abstract sig Email{
+userOfEmail:one User  
+}
+
+abstract sig Role{
+userOfRole:set  User
+}
+
+//The diffrent role of Users
+one sig Role_User,Role_Admin extends Role{
+}
+
+fact { name=~userOfName } 
+fact {name=~userOfName}
+fact {email=~userOfEmail}
+
+
+run {} for 1 but exactly 1 User
+run {} for 2 but exactly 2 User
+
+
+//State of the Model
+sig State{
+
+//Users present in the current State
+live: set User,
+
+//Relations with other Objects 
+role: live-> some Role,
+userOfRole: Role -> set live,
+
+name: live -> one Name,
+userOfName: Name -> some  live,
+
+email: live -> one Email,
+userOfEmail: Email -> one live
+}
+{
+role=~userOfRole
+name=~userOfName
+email=~userOfEmail
+//roleInSession in userInSession.role 
+}
+
+//fact atleastOneAdmin { all r:Role_Admin| some u:User| r in u.role  }	
+assert atleastOneAdmin { all r:Role_Admin| some u:User| r in u.role  }	
+check atleastOneAdmin for 4 but exactly 2 User,exactly 1 State
+
+assert alteastOneUser {some u:User |#u > 0}
+check alteastOneUser for 1 
+
+#+END_SRC
+
+
+* Tangle                                   :boilerplate:
+#+BEGIN_SRC Alloy :eval no :noweb yes :tangle webapp.als
+<<webapp>>
+#+END_SRC
+
+#+BEGIN_SRC Alloy :eval no :noweb yes :tangle staticModel.als
+<<StaticModel>>
+#+END_SRC
+
+
+#+BEGIN_SRC Alloy :eval no :noweb yes :tangle OOP.als
+<<OOP>>
+#+END_SRC

@@ -1,0 +1,69 @@
+#+TITLE: =set_email= route of the =Engine= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-29 Thu]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =set_email= route of the
+  =Engine= component.
+
+* Implementation
+
+** Imports and class =SetEmail=
+#+BEGIN_SRC python :tangle set_email.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+from runtime.objects.email.email import Email
+
+class SetEmail:
+
+#+END_SRC
+
+** The type structure of the =set_email= route
+
+   The =set_email= route is a dictionary with 'cmd' equal to
+   =Cmd.set_email=, a 'session' that is an instance of =Session=
+   ,data, which is a dictionary with one field 'user' of type
+   =User.is_inst= and a setemail which is an instance of =Email=.
+
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.set_email, 
+         'session': Session.is_inst, 
+         'data': {'user': User.is_inst},
+         'setemail': Email.is_inst}
+
+#+END_EXAMPLE
+
+
+** The =do= method
+   The =do= method performs the setemail operation on the entities.  Should
+   return a dictionary with 'result' which is =user= and 'instr' as the
+   instruction passed.
+
+#+BEGIN_SRC python :tangle set_email.py
+    @staticmethod 
+    def do(obj, instr):
+        print "set_email: %s" % instr
+        user = instr['data']['user']
+        setemail = instr['data']['setemail']
+        setemail = setemail.get("val")
+        obj.em.delete_user(user)
+        user.set(email = Email(val=setemail))
+        obj.em.add_user(user)
+        return {'instr': instr, 'result': user}
+
+#+END_SRC
+
+
+* Package 							:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.set_email package"
+#+END_SRC
+
+

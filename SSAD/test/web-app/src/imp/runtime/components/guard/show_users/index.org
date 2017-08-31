@@ -1,0 +1,112 @@
+#+TITLE: =show_users= route of the =Guard= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+This is the specification and implementation of the
+=show_users= route of the =Guard= component.  
+
+* Checks
+
+ - TypeCheck :: Check whether the instruction consists of
+      the command =show_users= and additionally contains a
+      session object (and nothing else).  The typecheck may
+      be implemented by consulting the [[../../../datatypes/instr/index.org][instruction datatype]]
+      specification.
+
+
+ - AuthCheck :: Check whether the role in the instruction's
+      session is either =user= or =admin=.  (This will
+      always be true since a session's role must either be
+      equal to =Role.user= or an =Role.admin=.
+
+
+ - StateCheck :: Check whether the session in the
+      instruction is indeed an entity currently present in
+      the entity manager's session aggregate.
+
+* Implementation
+
+** Imports and class =ShowUsers=
+#+BEGIN_SRC python :tangle show_users.py
+import traceback
+from  runtime.exceptions.app.exception import AppException
+from runtime.utils.type_utils.type_utils import check_pred
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.datatypes.instr.show_users.show_users_instr import ShowUsersInstr
+
+class ShowUsers:
+
+#+END_SRC
+
+** The type structure of the =show_users= route
+
+The =show_users= route is a dictionary with 'cmd' equal to
+=Cmd.show_user= and a 'session' that is an instance of
+=Session=.
+
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.show_users, 'session': Session.is_inst}
+#+END_EXAMPLE
+
+** The =do= method
+The =do= method simply does all the checks.  
+#+BEGIN_SRC python :tangle show_users.py
+    @staticmethod 
+    def do(component, instr):
+        print "show_users: %s" % instr
+
+        ShowUsers.check_type(instr)
+        ShowUsers.check_auth(component, instr)
+        ShowUsers.check_state(component, instr)
+        return instr
+
+#+END_SRC
+
+* Checks
+** Type checks
+#+BEGIN_SRC python :tangle show_users.py
+    @staticmethod
+    def check_type(instr):
+        check_pred(ShowUsersInstr.is_inst)(instr)
+        return instr
+
+#+END_SRC
+** Authorization check
+
+#+BEGIN_SRC python :tangle show_users.py
+    @staticmethod
+    def check_auth(component, instr):
+        return instr
+
+#+END_SRC
+
+** State check
+
+This check passes if the session is already an entity
+present in the entity manager.  Otherwise an =AppException=
+is raised.
+
+#+BEGIN_SRC python :tangle show_users.py
+
+    @staticmethod
+    def check_state(component, instr):
+        if not component.em.is_present(instr['session']):
+            raise AppException(op="show_users.chec_state",
+                                   msg="session is not in the entity manager")
+
+        return instr
+
+#+END_SRC
+
+* Package                                                       :boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.show_users package"
+#+END_SRC
+

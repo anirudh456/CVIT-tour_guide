@@ -1,0 +1,139 @@
+#+title:  Application specific constraints and Entity Managers
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+This document lists all 
+
+ - the application specific referential integrity
+   constraints
+
+ - and the entity managers that ensure these constraints.
+
+
+
+* Referential integrity constraints 
+
+Every safe entity manager (persistent or volatile) must
+ensure referential integrity of the entities it aggregates.
+
+* Uniqueness integrity constraints
+
+This constraint is ensured by the safe Utility Entity
+Manager. 
+
+
+
+
+* Summary of constraints
+
+** Object Level Constraints
+
+- [[../objects/email/index.org][Email]] :: =val= field is a valid email string. 
+
+- [[../objects/name/index.org][Name]] ::  =val= field is an alphabetic string. 
+
+- [[../objects/role/index.org][Role]] :: =val= field is either "admin" or "user"
+
+- [[../objects/user/index.org][User]] :: =email= field is an =Email=, =name= field is a
+     =Name=, and =roles= field is a list of =Role=s.
+
+- [[../objects/session/index.org][Session]] :: =user= field is a =User=, =key= field is a
+     String and =role= field is =Role=.  Furthermore, a
+     session's role must occur in the list of roles of the
+     session's user.  See test case
+     =test_user_role_mismatch= in the [[../objects/session/tests/create_session_exc.org][TestCreateSessionExc]]
+     class that demonstrates this constraint. 
+
+
+The object level constraints are specified when the object's
+class is defined using =PropertyClassFactory.mk_class=.   
+
+The constraints are checked every time the object is
+created. 
+
+** Object Equality definition and Unique Key identification
+
+
+- [[../objects/email/index.org][Email]] :: Two emails are considered equal if their =val=
+     fields are equal.  =val= is the unique key.
+
+- [[../objects/name/index.org][Name]] ::  Two Names are considered equal if their =val=
+     fields are equal. =val= is the unique key.
+
+- [[../objects/role/index.org][Role]] :: Two roles are considered equal if their =val=
+     fields are equal.  =val= is the unique key.
+
+- [[../objects/user/index.org][User]] :: Two users are considered equal if their =email=
+     fields are equal.  =email= is the unique key.
+
+- [[../objects/session/index.org][Session]] :: Two sessions are considered equal if their
+     =key= fields are equal.  =key= is the unique key.
+
+
+
+The object equality definition and unique key identification
+are specified when the object's class is defined using
+=PropertyClassFactory.mk_class=.
+
+They are checked every time two objects are compared for
+equality.
+
+** Uniformity and Uniqueness constraints on entity sets
+
+These are constraints in the aggregates of entities:
+No two entities in the aggregate have the same unique key.
+
+In the application there are only two primary aggregates:
+
+ - User set :: 
+
+       1. All objects in the User set are instances of
+          =User=.  [Uniformity]
+
+       2. No two objects in the user set have the same
+          =email= field.  [Uniqueness]
+
+ - Session set ::
+
+       1.  All objects in the Session set are instances of
+          =Session=.   [Uniformity]
+
+       2. No two objects in the Session set have the same
+          =key= field.  [Uniqueness]
+
+
+In the implementation, this is enforced by a more general
+manner.  
+
+ - The uniformity constraint is implemented by the
+   [[../utils/entitymgrs/volatile/unsafe/index.org][UnsafeVolatileEntityMgr]] utility class.
+
+ - The uniqueness constraint is implemented by the
+   [[../utils/entitymgrs/volatile/safe/index.org][SafeVolatileEntityMgr]] utility class.
+
+
+** Application specific referential integrity constraints
+
+These are constraints on the user and session aggregates.
+
+   - 1. Session-user referential integrity constraint :: If
+        =s= is a session in the session aggregate, then the
+        =s='s user is present in the user aggregate.
+
+This constraint is implemented by the application specific
+[[./svem/index.org][EntityMgr]] class in the [[./svem/index.org][svem]] module. 
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "volatile package"
+
+#+END_SRC
+
+

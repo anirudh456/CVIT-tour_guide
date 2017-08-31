@@ -1,0 +1,34 @@
+#+TITLE: Workflows
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+A workflow is a particular wiring of components.  
+
+This directory contains workflows for the application.
+There is only one workflow the guard-engine workflow. 
+
+ - [[./guard_engine/index.org][guard-engine workflow]]
+
+#+BEGIN_HTML
+   <p>   The following diagram shows the work flow of guard-engine.
+       </p>
+         <img src="https://docs.google.com/drawings/d/1WuSrNFmCuoo0C_rMh0mLYZmoMBgkMQtPR0NCZiVnor0/pub?w=960&h=720"
+	   <p align="center">work flow chart </p>
+#+END_HTML
+
+To edit the image click [[https://docs.google.com/drawings/d/1WuSrNFmCuoo0C_rMh0mLYZmoMBgkMQtPR0NCZiVnor0/edit?usp=sharing][here]].
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.workflows package"
+#+END_SRC
+
+
+

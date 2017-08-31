@@ -1,0 +1,81 @@
+#+title: The =show_users= instruction type
+#+DATE: [2017-04-27 Thu]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Implementation
+#+BEGIN_SRC  python :tangle show_users_instr.py
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.utils.type_utils.type_utils import dict_of
+from runtime.utils.type_utils.type_utils import is_equal_to
+
+class ShowUsersInstr():
+
+    spec = {'cmd':is_equal_to(Cmd.show_users), 
+                   'session': Session.is_inst}
+
+    def __init__(self):
+       raise Exception("can not be instantiated!")
+
+    @staticmethod
+    def is_inst(obj):
+        return dict_of(ShowUsersInstr.spec)(obj)
+
+#+END_SRC
+
+
+* Tests
+
+#+BEGIN_SRC python :tangle test_show_users_instr.py
+import unittest
+from unittest import TestCase
+from runtime.objects.email.email import Email
+from runtime.objects.name.name import Name
+from runtime.objects.role.role import Role
+from runtime.objects.user.user import User
+from runtime.objects.session.session import Session
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.datatypes.instr.show_users.show_users_instr import ShowUsersInstr
+
+class TestHarness(TestCase):
+    def setUp(self):
+        self.session = Session(user=User(email=Email(val="joe@g.com"), 
+                                                                    name=Name(val="Joe Pesci"), 
+                                                                    roles=[Role.admin]), 
+                                                          role=Role.admin,
+                                                          key="123")
+
+
+    def tearDown(self):
+      self.em = None
+
+    def test_positive(self):
+       instr = {'cmd': Cmd.show_users, 'session': self.session}
+       self.assertTrue(ShowUsersInstr.is_inst(instr))
+
+
+    def test_cmd_wrong(self):
+       instr = {'cmd': "foo", 'session': self.session}
+       self.assertFalse(ShowUsersInstr.is_inst(instr))
+
+
+    def test_session_missing(self):
+       instr = {'cmd': Cmd.show_users}
+       self.assertFalse(ShowUsersInstr.is_inst(instr))
+
+
+    def test_cmd_missing(self):
+       instr = {'session': self.session}
+       self.assertFalse(ShowUsersInstr.is_inst(instr))
+
+#+END_SRC
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.datatypes.instr.show_users package"
+#+END_SRC
+

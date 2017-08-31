@@ -1,0 +1,49 @@
+#+title: Test on add_role route when session is not present in the entity manager
+#+AUTHOR: VLEAD
+#+DATE: [2017-06-29 Thu]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestAddRole= object holds an instance of the =AddRole= component
+  against the field =component=.  This test invokes the =do= method on the
+  component and an =Exception= when state check is performed.
+
+** Imports
+#+BEGIN_SRC python :tangle test_no_session.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.objects.role.role import Role
+from runtime.components.guard.del_user.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test creates an
+   instruction with cmd =add_role=,a session,data and addrole.  The entity manager does not
+   hold a session contained in the instruction.  The guard's do method raises an
+   =Exception=.
+
+#+BEGIN_SRC python :tangle test_no_session.py
+class TestNoSession(TestHarness):
+
+    def test_no_session(self):
+        print "test_no_session"
+        # delete session from entity manager setup in the TestHarness
+        self.component.em.delete_session(self.session)
+        session = self.session
+        instr = {'cmd': Cmd.add_role, 
+                 'session': session, 
+                 'data': {'user': self.d_user,
+                          'addrole': Role.admin}
+        }
+        guard = self.component
+        with self.assertRaises(Exception):
+            guard.do(instr)
+
+#+END_SRC

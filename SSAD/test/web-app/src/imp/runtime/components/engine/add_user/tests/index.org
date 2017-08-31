@@ -1,0 +1,77 @@
+#+title: Test Setup for Add-Users Command Handler
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test Harness
+
+  Instantiates a =Engine= component and populates it with the =ShowUser= command
+  handler.
+
+** Imports
+#+BEGIN_SRC python :tangle harness.py
+import unittest
+from unittest import TestCase
+from runtime.components.engine.engine import Engine
+from runtime.components.engine.add_user.add_user import AddUser
+from runtime.emgrs.svem.svem import EntityMgr
+from runtime.objects.email.email import Email
+from runtime.objects.name.name import Name
+from runtime.objects.role.role import Role
+from runtime.objects.user.user import User
+from runtime.objects.session.session import Session
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+** Class TestHarness
+
+This class's =setUp= method sets up the context for running
+tests on the =add_user= route for the engine component. 
+
+ - creates an entity manager
+ - creates a engine component with that entity manager
+ - adds the =add_user='s command handler (=AddUser.do=)
+ - creates a session object
+ - adds the session to the entity manager as an entity
+ - saves the session as a field for access to the test cases 
+
+#+BEGIN_SRC python :tangle harness.py
+class TestHarness(TestCase):
+    TESTING = True
+
+    def setUp(self):
+        # create component
+        self.em = EntityMgr()
+        self.component = Engine(self.em)
+
+        # add cmd handler to it
+        self.component.add_cmd_handler(Cmd.add_user, AddUser.do)
+
+
+        user = User(name=Name(val="Jimi Hendrix"),
+                    email=Email(val="jimi@gnu.org"),
+                    roles=[Role.admin])
+
+        d_key = "kdshfkjdahfjdhfkjd"
+        session = Session(user=user, role=Role.admin, key=d_key)
+
+        self.component.em.add_user(user)
+        self.component.em.add_session(session)
+
+        self.user = user 
+        self.session = session 
+
+    def tearDown(self):
+        self.component = None
+
+#+END_SRC
+
+* Package
+
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.add_user.tests package"
+#+END_SRC

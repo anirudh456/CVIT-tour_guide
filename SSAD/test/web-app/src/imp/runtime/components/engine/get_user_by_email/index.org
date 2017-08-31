@@ -1,0 +1,62 @@
+#+TITLE: =get_user_by_email= route of the =Engine= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-7 Fri]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =get_user_by_email=
+  route of the =Engine= component.
+
+
+* Implementation
+
+** Imports and class =GetUser=
+#+BEGIN_SRC python :tangle get_user_by_email.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+
+class GetUser:
+
+#+END_SRC
+
+** The type structure of the =get_user_by_email= route
+
+   The =get_user_by_email= route is a dictionary with 'cmd' equal to
+   =Cmd.get_user_by_email= a dictionary of object =email= that is an
+   instace of =Email= and a 'session' that is an instance of
+   =Session=.
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.get_user_by_email, 'session': Session.is_inst, 'data': {'email':Email.is_inst}}
+#+END_EXAMPLE
+** The =do= method
+The =do= method performs the get user operation on the entities.Should return a dictionary
+ with 'result' as the user and 'instr' as the instruction passed. 
+
+#+BEGIN_SRC python :tangle get_user_by_email.py
+    @staticmethod 
+    def do(obj, instr):
+        print "get_user_by_email: %s" % instr
+        userlist = obj.em.get_all(User)
+        email = instr['data']['email']
+        email = email.get("val")
+        for i in range(len(userlist)):
+            check = userlist[i].get("email").get("val")
+            if email == check:
+                user = userlist[i]
+                return {'instr': instr, 'result': user}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.get_user_by_email package"
+#+END_SRC
+
+

@@ -1,0 +1,52 @@
+#+TITLE: =show_users= route of the =Engine= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =show_users=
+  route of the =Engine= component.
+
+
+* Implementation
+
+** Imports and class =ShowUsers=
+#+BEGIN_SRC python :tangle show_users.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+
+class ShowUsers:
+
+#+END_SRC
+
+** The type structure of the =show_users= route
+
+   The =show_users= route is a dictionary with 'cmd' equal to =Cmd.show_user=
+   and a 'session' that is an instance of =Session=.
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.show_users, 'session': Session.is_inst}
+#+END_EXAMPLE
+** The =do= method
+The =do= method performs the CRUD operations on the entities.
+
+#+BEGIN_SRC python :tangle show_users.py
+    @staticmethod 
+    def do(obj, instr):
+        print "show_users: %s" % instr
+        users = obj.em.get_all(User)
+        return {'instr': instr, 'result': users}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.show_users package"
+#+END_SRC
+

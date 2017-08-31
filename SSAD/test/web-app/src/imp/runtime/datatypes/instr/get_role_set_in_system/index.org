@@ -1,0 +1,35 @@
+#+title: The =GetRoleSet= instruction type
+#+DATE: [2017-07-11 tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Implementation
+#+BEGIN_SRC  python :tangle get_role_set_in_system_instr.py
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.utils.type_utils.type_utils import dict_of
+from runtime.utils.type_utils.type_utils import is_equal_to
+
+class GetRoleSetInstr():
+
+    spec = {'cmd':is_equal_to(Cmd.get_role_set_in_system), 
+                   'session': Session.is_inst}
+
+    def __init__(self):
+       raise Exception("can not be instantiated!")
+
+    @staticmethod
+    def is_inst(obj):
+        return dict_of(GetRoleSetInstr.spec)(obj)
+
+#+END_SRC
+
+   
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.datatypes.instr.get_role_set_in_system package"
+#+END_SRC
+

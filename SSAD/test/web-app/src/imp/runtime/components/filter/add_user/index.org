@@ -1,0 +1,51 @@
+#+TITLE: =add_user= route of the =Filter= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =add_user= route of the
+  =Filter= component.
+
+
+* Implementation
+
+** Imports and class =AddUser=
+#+BEGIN_SRC python :tangle add_user.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+
+class AddUser:
+
+#+END_SRC
+
+** The type structure of the =add_user= route
+
+   The =add_user= route is a dictionary with 'cmd' equal to =Cmd.show_user=
+   and a 'session' that is an instance of =Session=.
+
+** The =do= method
+The =do= method performs the add operation on the entities.  Should return a
+dictionary with 'result' the newly created user and 'instr' as the instruction
+passed.
+
+#+BEGIN_SRC python :tangle add_user.py
+    @staticmethod 
+    def do(obj, instr):
+        user = instr['data']['user']
+        return {'instr': instr, 'result': user}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.filter.add_user package"
+#+END_SRC
+

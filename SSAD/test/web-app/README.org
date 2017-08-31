@@ -1,0 +1,100 @@
+A show case of model driven developmet of web applications.
+
+Please checkout this [[./src/deployment/run-userdirectory-in-development-environment.org][document]] to run the application in developer's
+environment.
+
+*** To Fix
+
+**** request handling
+
+1. we do not need to check for =GET= and =POST= in request handlers that
+   have only one method registered on them. eg: =api.org:588= at =show_users()=
+
+2. We need to check for existence of keys in request handlers, and not
+   simply dereference the dictionary. eg: =show_users()=
+**** Add user API change
+We cannot create an admin user with =add_user=.
+Hence, remove the =role= parameter from the =add_user= API.
+make =role = "user"= by default.
+
+Remove =role= as a parameter from the REST API. Change =add_user=
+in system interface to set =role = "user"= by default.
+**** Have APIS return usage errors in JSON
+wrong API usage / wrong user input should not result in
+=4xx= or =5xx= errors.
+
+Rather, they should return a json object along the lines of
+
+#+BEGIN_SRC js
+{
+    status: "success" / "failure",
+    [error_message: "error_string"]
+    [other components on success]
+}
+#+END_SRC
+
+- Errors will have ="failure"=  and an associated error message
+- Success with have ="success"= and other associated data
+
+
+
+* urllib2.URLError
+#+BEGIN_EXAMPLE
+urllib2.URLError
+
+URLError: <urlopen error [Errno -2] Name or service not known>
+
+#+END_EXAMPLE
+
+If such an error occurs when authentication using google oauth, install nscd - [[http://stackoverflow.com/questions/21356781/urrlib2-urlopen-name-or-service-not-known-persists-when-starting-script-witho][reference]]
+
+#+BEGIN_EXAMPLE
+apt-get install nscd
+#+END_EXAMPLE
+
+
+* Set up emacs to modularly run test cases
+
+  1. Copy =cd.el= and =dired-operations.el= from =literate-tools/elisp= to
+     =~/.emacs.d/custom/= directory.
+
+  2. Add the below lines to =~/.emacs= file to load the path
+
+     #+BEGIN_EXAMPLE
+     (load "~/.emacs.d/custom/cd")
+     (load "~/.emacs.d/custom/dired-operations")
+     #+END_EXAMPLE
+
+  3. Map keys by adding the lines below to =~/.emacs= file
+     #+BEGIN_EXAMPLE
+     (add-hook 'dired-load-hook
+     (function 
+     (lambda ()
+      (setq dired-copy-preserve-time t)
+      (setq dired-recursive-copies 'top)
+      (setq dired-dwim-target t) ;
+					; set dired-do-rename's
+					; default
+					; target to the
+					; other window
+      (define-key dired-mode-map "b" 'browse-url-of-dired-file)
+      (load "dired-x")
+      (define-key dired-mode-map "z" 'dired-remote-copy)
+      (define-key dired-mode-map "r" 'rsync-se-101) 
+      (define-key dired-mode-map "T" 'dired-trash-files)
+      (define-key dired-mode-map "\C-ca" 'dired-acroread-file)
+      (define-key dired-mode-map "P" 'dired-rsync-to-build-code)
+      (define-key dired-mode-map "\C-cd" 'cd-buffer-dir)
+      )))
+     #+END_EXAMPLE
+
+* Make changes and run the unit tests
+
+  1. After making changes to a file, tangle the code out by running the command
+     =C-c C-v t=
+  2. Mark the files in the dired buffer and copy them to the build folder by
+     pressing =P= key.
+  3. Run the test cases by using makefile
+     #+BEGIN_EXAMPLE
+     make py-tests
+     #+END_EXAMPLE

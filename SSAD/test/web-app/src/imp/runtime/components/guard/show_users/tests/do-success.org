@@ -1,0 +1,42 @@
+#+title: Test that invoked the =do= method without any failure
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test
+  =TestShowUsers= object holds an instance of the =ShowUsers= component against
+  the field =component=.  This test invokes the =do= method on the component.
+
+** Imports
+#+BEGIN_SRC python :tangle test_do_passes.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.components.guard.show_users.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test creates an
+   instruction with cmd =show_users= and an existing session.  The guard's do
+   method succeeds and returns the instruction as result.
+
+#+BEGIN_SRC python :tangle test_do_passes.py
+class TestDoPasses(TestHarness):
+
+    def test_do_passes(self):
+        print "test_do_passes"
+        session = self.session
+        instr = {'cmd': Cmd.show_users, 'session': session}
+        guard = self.component
+        result = guard.do(instr)
+        print result
+        self.assertEqual(result, instr)
+
+#+END_SRC
+

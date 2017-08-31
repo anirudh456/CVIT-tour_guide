@@ -1,0 +1,55 @@
+#+title: Test that invoked the =do= method without any failure
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-10 Mon]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test
+  =TestShowDetails= object holds an instance of the =ShowDetails= component
+  against the field =component=.  This test invokes the =do= method on
+  the component.
+
+** Imports
+#+BEGIN_SRC python :tangle test_do_passes.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.objects.email.email import Email
+from runtime.objects.user.user import User
+from runtime.objects.name.name import Name
+from runtime.objects.role.role import Role
+from runtime.components.engine.show_user_details.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test
+   creates an instruction with cmd =show_user_details= ,a dictionary
+   with an object that is an instance of =Email= and an existing
+   session.  The engine's do method succeeds and returns the
+   instruction and result of the operation as result.
+
+#+BEGIN_SRC python :tangle test_do_passes.py
+class TestDoPasses(TestHarness):
+
+    def test_do_passes(self):
+        print "test_do_passes"
+        session = self.session
+        instr = {'cmd': Cmd.show_user_details, 
+                 'session': session, 
+                 'data': {'email':Email(val="user@gnu.org")}
+        }
+
+        result_dict= {'roles_of_user':[Role.user,Role.admin],
+                      'name_of_user':"user user",
+                      'email_of_user':"user@gnu.org"}
+        engine = self.component
+        result = engine.do(instr)
+        self.assertEqual(result['result'], result_dict)
+
+#+END_SRC
+

@@ -1,0 +1,43 @@
+#+title: Test on show_user_details route with wrong type of arguments
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-10 Mon]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestShowDetails= object holds an instance of the =ShowDetails= component
+  against the field =component=.  This test invokes the =do= method on
+  the component.  The instruction is created with wrong types.
+
+** Imports
+#+BEGIN_SRC python :tangle test_wrong_arg_types.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.components.guard.show_user_details.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component. This test creates an
+   instruction with cmd =show_user_details=,a dictionary
+   with an object that is an instance of =Email= and a session that is not of type
+   session. The guard's do method raises =Exception=
+
+#+BEGIN_SRC python :tangle test_wrong_arg_types.py
+class TestWrongArguments(TestHarness):
+
+    def test_pass(self):
+        print "test_with_wrong_type_arguments"
+
+        session = self.session
+        instr = {'cmd': Cmd.show_user_details, 'session': 'xyz'}
+        guard = self.component
+        with self.assertRaises(Exception):
+            guard.do(instr)
+
+#+END_SRC

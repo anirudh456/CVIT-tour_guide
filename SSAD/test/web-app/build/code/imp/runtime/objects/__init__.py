@@ -1,0 +1,2 @@
+
+print "objects package"

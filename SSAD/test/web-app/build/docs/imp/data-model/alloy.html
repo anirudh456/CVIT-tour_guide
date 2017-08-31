@@ -1,0 +1,1611 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Data Model for User Directory Application</title>
+<!-- 2017-08-31 Thu 18:25 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="VLEAD" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../style/css/worg-style.css" />
+<link rel="stylesheet" type="text/css" href="../../style/css/override.css" />
+<link rel="icon" type="image/png" href="../../style/img/favicon/popl.png" />
+<script type="text/javascript" src="../../style/js/org-info.js">
+/**
+ *
+ * @source: ../../style/js/org-info.js
+ *
+ * @licstart  The following is the entire license notice for the
+ *  JavaScript code in ../../style/js/org-info.js.
+ *
+ * Copyright (C) 2012-2013 Free Software Foundation, Inc.
+ *
+ *
+ * The JavaScript code in this tag is free software: you can
+ * redistribute it and/or modify it under the terms of the GNU
+ * General Public License (GNU GPL) as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.  The code is distributed WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+ *
+ * As additional permission under GNU GPL version 3 section 7, you
+ * may distribute non-source (e.g., minimized or compacted) forms of
+ * that code without the copy of the GNU GPL normally required by
+ * section 4, provided you include this license notice and a URL
+ * through which recipients can access the Corresponding Source.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in ../../style/js/org-info.js.
+ *
+ */
+</script>
+
+<script type="text/javascript">
+
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+
+<!--/*--><![CDATA[/*><!--*/
+org_html_manager.set("TOC_DEPTH", "1");
+org_html_manager.set("LINK_HOME", "../../index.html");
+org_html_manager.set("LINK_UP", "../index.html");
+org_html_manager.set("LOCAL_TOC", "1");
+org_html_manager.set("VIEW_BUTTONS", "0");
+org_html_manager.set("MOUSE_HINT", "underline");
+org_html_manager.set("FIXED_TOC", "0");
+org_html_manager.set("TOC", "1");
+org_html_manager.set("VIEW", "info");
+org_html_manager.setup();  // activate after the parameters are set
+/*]]>*///-->
+</script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="../index.html"> UP </a>
+ |
+ <a accesskey="H" href="../../index.html"> HOME </a>
+</div><div id="content">
+<h1 class="title">Data Model for User Directory Application</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Introduction</a></li>
+<li><a href="#sec-2">2. Objective of the Data Model</a></li>
+<li><a href="#sec-3">3. Objective of using Alloy</a></li>
+<li><a href="#sec-4">4. Requirements</a>
+<ul>
+<li><a href="#sec-4-1">4.1. Notation</a></li>
+<li><a href="#sec-4-2">4.2. Definition and declaration</a></li>
+<li><a href="#sec-4-3">4.3. User</a>
+<ul>
+<li><a href="#sec-4-3-1">4.3.1. Unique Email</a></li>
+<li><a href="#sec-4-3-2">4.3.2. Unique Name</a></li>
+<li><a href="#sec-4-3-3">4.3.3. Multiple Roles</a></li>
+<li><a href="#sec-4-3-4">4.3.4. Multiple Sessions</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-4">4.4. Role</a>
+<ul>
+<li><a href="#sec-4-4-1">4.4.1. Multiple Users</a></li>
+<li><a href="#sec-4-4-2">4.4.2. Multiple Sessions</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-5">4.5. Name</a>
+<ul>
+<li><a href="#sec-4-5-1">4.5.1. Multiple Users</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-6">4.6. Email</a>
+<ul>
+<li><a href="#sec-4-6-1">4.6.1. Uniqueness of User</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-7">4.7. Session</a>
+<ul>
+<li><a href="#sec-4-7-1">4.7.1. Unique User</a></li>
+<li><a href="#sec-4-7-2">4.7.2. Unique Role</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-8">4.8. Update User</a></li>
+<li><a href="#sec-4-9">4.9. Facts</a></li>
+<li><a href="#sec-4-10">4.10. Meta Model</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Operations</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Show User</a></li>
+<li><a href="#sec-5-2">5.2. login</a>
+<ul>
+<li><a href="#sec-5-2-1">5.2.1. Operation</a></li>
+<li><a href="#sec-5-2-2">5.2.2. Result</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-3">5.3. Delete User</a>
+<ul>
+<li><a href="#sec-5-3-1">5.3.1. Operation</a></li>
+<li><a href="#sec-5-3-2">5.3.2. Result</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">5.4. Add User</a>
+<ul>
+<li><a href="#sec-5-4-1">5.4.1. Operation</a></li>
+<li><a href="#sec-5-4-2">5.4.2. Result</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-5">5.5. Update User</a>
+<ul>
+<li><a href="#sec-5-5-1">5.5.1. Operation</a></li>
+<li><a href="#sec-5-5-2">5.5.2. Result</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-6">5.6. Logout</a>
+<ul>
+<li><a href="#sec-5-6-1">5.6.1. Operation</a></li>
+<li><a href="#sec-5-6-2">5.6.2. Result</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-6">6. Check And Assertions</a>
+<ul>
+<li><a href="#sec-6-1">6.1. Assertions</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7. Static Model with Session</a></li>
+<li><a href="#sec-8">8. Static Model</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+In this application we have made a directory of users and their
+relation with various entities like name,email and role.
+Also many operations like add,delete,update,login and logout can be carried out in the application.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Objective of the Data Model</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+The application is abstracted as the data model. The model
+captures: the entities that comprise the system, relations and constraints
+between these entities and operations that entail a change in the state of
+the system.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Objective of using Alloy</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+While building a Data Model for our application we came across many
+requirements and operations that must be satisfied.  For satisfying
+these requirements and operations we have made many assertions that
+must hold true.  Hence we have used Alloy,a relational modelling
+language to make a model which satisfies all these assertions.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Requirements</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+The relations between the entities and the the following code in
+alloy is given below
+</p>
+</div>
+
+<div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Notation</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+There is a certain notation that is used in Alloy to define
+relations of the data model.
+</p>
+
+<p>
+If <code>A</code> is a set, then
+</p>
+<ol class="org-ol">
+<li><code>one A</code> denotes exactly one element of <code>A</code>.
+</li>
+<li><code>lone A</code> denotes at most one element of <code>A</code>.
+</li>
+<li><code>some A</code> denotes  one or more elements of <code>A</code>
+</li>
+<li><code>set A</code>  denotes zero or more elements of <code>A</code>.
+</li>
+<li><code>~A</code> denotes negation of <code>A</code>. 
+</li>
+<li>If <code>B</code> is a relation in <code>A</code> then <code>A.B</code> is the set of objects
+connected by relation <code>B</code> in <code>A</code>.
+</li>
+<li><code>A -&gt; B</code> denotes a relation <i>from</i> <code>A</code> <i>to</i> <code>B</code>.
+
+<pre class="example">
+u-&gt;u.(State.role)
+
+(State.role)=set of Object Role defined in =State=
+u.(State.role)=set of Object Role defines in =State= but are only related to u
+u-&gt;u.(State.role) is a relation between user and its role
+</pre>
+</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Definition and declaration</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+User,Name,Email,Role,Session are the diffrent entities in this
+model.  There are only 2 types of role possible: <code>Role_Admin</code> and
+<code>Role_User</code>.
+</p>
+
+<p>
+In alloy we use <code>sig</code> to declare an object(we can also think of it
+as a set).  Here we need to declare objects called
+User,Name,Email,Role,Session(they are like sets) for our
+application.  <a href="../../req/index.html">Implementation of User</a>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> abstract sig User{}
+</pre>
+</div>
+
+<p>
+<a href="../../req/index.html">Implementation of Name</a>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> abstract sig Name{}
+</pre>
+</div>
+
+<p>
+<a href="../../req/index.html">Implementation of Email</a>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">abstract sig Email{}
+</pre>
+</div>
+
+<p>
+<a href="../runtime/objects/session/index.html">Implementation of Session</a>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">abstract sig Session{}
+</pre>
+</div>
+
+<p>
+<code>extends Role</code> makes sure that
+<code>Role_Admin</code> and <code>Role_User</code> are <b>disjoint</b> sets of Role.
+</p>
+
+<p>
+<a href="../../req/index.html">Implementation of Role</a>
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">abstract sig Role{}
+one sig Role_User,Role_Admin extends Role{}
+</pre>
+</div>
+
+<p>
+To do operations on the model we must define <code>State</code> of the
+model.Each opeartion then corresponds to change from one state to
+another.  Objects must be defined inside the state hence we create
+a relation between <code>State</code> and the objects using <code>liveUser</code>,
+<code>liveName</code>, <code>liveSession</code> and <code>liveEmail</code>.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> sig State{
+ liveUser: set User,
+ liveName :set Name,
+ liveEmail :set Email,
+ liveSession : set Session,
+</pre>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> User</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+User is main entity in the model. The interaction of a user in the
+State is defined by the requirements below.
+</p>
+</div>
+
+<div id="outline-container-sec-4-3-1" class="outline-4">
+<h4 id="sec-4-3-1"><span class="section-number-4">4.3.1</span> Unique Email</h4>
+<div class="outline-text-4" id="text-4-3-1">
+<p>
+Each user must have one email 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">email: liveUser -&gt; one liveEmail,
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-3-2" class="outline-4">
+<h4 id="sec-4-3-2"><span class="section-number-4">4.3.2</span> Unique Name</h4>
+<div class="outline-text-4" id="text-4-3-2">
+<p>
+Each user must have one name
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> name: liveUser -&gt; one liveName,
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-3-3" class="outline-4">
+<h4 id="sec-4-3-3"><span class="section-number-4">4.3.3</span> Multiple Roles</h4>
+<div class="outline-text-4" id="text-4-3-3">
+<p>
+Each user can be <code>admin</code> or <code>user</code> or both  
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">role: liveUser -&gt; some Role,
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-3-4" class="outline-4">
+<h4 id="sec-4-3-4"><span class="section-number-4">4.3.4</span> Multiple Sessions</h4>
+<div class="outline-text-4" id="text-4-3-4">
+<p>
+Each user can be in multiple sessions
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">session : liveUser -&gt; some liveSession,
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Role</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+Different privileges for accessing the system is maintained by roles.There are two roles, <code>user</code> and <code>admin</code>
+</p>
+</div>
+
+<div id="outline-container-sec-4-4-1" class="outline-4">
+<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> Multiple Users</h4>
+<div class="outline-text-4" id="text-4-4-1">
+<p>
+Each role can be assigned to multiple users.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  userOfRole: Role -&gt; set liveUser,
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-4-2" class="outline-4">
+<h4 id="sec-4-4-2"><span class="section-number-4">4.4.2</span> Multiple Sessions</h4>
+<div class="outline-text-4" id="text-4-4-2">
+<p>
+Each role can be assigned to multiple sessions.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> roleinSession : Role -&gt;some liveSession,
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5"><span class="section-number-3">4.5</span> Name</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+Name is one of the properties of a user.
+</p>
+</div>
+<div id="outline-container-sec-4-5-1" class="outline-4">
+<h4 id="sec-4-5-1"><span class="section-number-4">4.5.1</span> Multiple Users</h4>
+<div class="outline-text-4" id="text-4-5-1">
+<p>
+In our model multiple users can be assigned to a given name.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">userOfName: liveName -&gt; some liveUser,
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-6" class="outline-3">
+<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Email</h3>
+<div class="outline-text-3" id="text-4-6">
+<p>
+Email is one of the characteristic properties of a user.
+</p>
+</div>
+<div id="outline-container-sec-4-6-1" class="outline-4">
+<h4 id="sec-4-6-1"><span class="section-number-4">4.6.1</span> Uniqueness of User</h4>
+<div class="outline-text-4" id="text-4-6-1">
+<p>
+Each email is assigned to only one User.Hence uniqueness of the user can by defined by his email.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">userOfEmail: liveEmail -&gt;one liveUser,
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-7" class="outline-3">
+<h3 id="sec-4-7"><span class="section-number-3">4.7</span> Session</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+Each login is considered as a session .Each <code>session</code> has a unique <code>user</code> and a unique <code>role</code>.
+</p>
+</div>
+<div id="outline-container-sec-4-7-1" class="outline-4">
+<h4 id="sec-4-7-1"><span class="section-number-4">4.7.1</span> Unique User</h4>
+<div class="outline-text-4" id="text-4-7-1">
+<p>
+There is only one user in each session.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">userofSession: liveSession -&gt; one liveUser,
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-7-2" class="outline-4">
+<h4 id="sec-4-7-2"><span class="section-number-4">4.7.2</span> Unique Role</h4>
+<div class="outline-text-4" id="text-4-7-2">
+<p>
+There is only one role in each session
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">roleofSession : liveSession -&gt; one Role,
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-8" class="outline-3">
+<h3 id="sec-4-8"><span class="section-number-3">4.8</span> Update User</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+Specifically for the update operations we must have additional relations between  
+the objects and the State.
+</p>
+
+<p>
+There should be atleast one email in the Email set so that a user can be updated with that email.Similarly for name.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  updateName : lone (Name - liveName),
+  updateEmail : lone (Email - liveEmail)
+  }
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4-9" class="outline-3">
+<h3 id="sec-4-9"><span class="section-number-3">4.9</span> Facts</h3>
+<div class="outline-text-3" id="text-4-9">
+<p>
+Relations alone wont make our model work precisely hence we need to make some statements which are al
+ways true.These are called <code>facts</code> 
+</p>
+
+<p>
+All the relations should be surjective.It means that, if the <code>user</code> is related to an <code>email</code>, then the <code>email</code> should be 
+related to the same <code>uesr</code>. 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  { 
+  role=~userOfRole
+  name=~userOfName
+  email=~userOfEmail
+  session =~userofSession
+  roleofSession=~roleinSession
+  }
+</pre>
+</div>
+
+<p>
+All the names in the <code>Name</code> set should be either in <code>liveName</code> or <code>updateName</code> sets.Similarly all the emails in <code>Email</code> set 
+should be in the <code>liveEmail</code> or <code>updateEmail</code> sets.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  fact allNameLive{State.liveName+State.updateName = Name}
+  fact allEmailLive{State.liveEmail+State.updateEmail = Email}
+</pre>
+</div>
+
+<p>
+For every session in <code>liveSession</code> set,the role of the <code>Session</code> should be a subset of the set of roles of the <code>user</code>
+in that <code>session</code>.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  fact sameRoleinSession{ all s :State.liveSession, u: s.(State.userofSession) | s.(State.roleofSession) in u.(State.role) }
+</pre>
+</div>
+
+<p>
+For any two sessions in <code>liveSession</code> set,they are related to different users or if they are related to the same user , 
+then the role of the user in the two sessions is different.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">  fact noSameSession{all u:State.liveUser , s1:u.(State.session) ,s2:u.(State.session) | 
+  s1 != s2 implies s1.(State.userofSession) != s2.(State.userofSession) or s1.(State.roleofSession) != s2.(State.roleofSession) }
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-10" class="outline-3">
+<h3 id="sec-4-10"><span class="section-number-3">4.10</span> Meta Model</h3>
+<div class="outline-text-3" id="text-4-10">
+<p>
+meta model  showing the relations between different entities in our application.(diagram 1.1) 
+</p>
+<p>
+<img src="./diagrams/metamodel.jpg" alt="metamodel.jpg" />
+diagram 1.1
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Operations</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+CRUD operations are the operations we are gonna use on our model   
+</p>
+
+<p>
+Each operation is performed on an entity instance or an
+entity-set which is the <code>State</code> of the model.   
+These operation may take additional parameters.
+</p>
+
+<ul class="org-ul">
+<li>C  create a user         
+</li>
+<li>R  read   a user 
+</li>
+<li>U  update a user      
+</li>
+<li>D  delete a user
+</li>
+</ul>
+</div>
+
+<div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Show User</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+Shows all Users and their relations in the current state.diagram 
+(diagram 1.2 shows the model of the state with users and their relations.)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">pred showUsers{}
+run showUsers for 4 but exactly 1 State
+</pre>
+</div>
+
+<p>
+<img src="./diagrams/showusers.jpg" alt="showusers.jpg" />
+diagram 1.2
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> login</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Login adds a session to the State and makes a user related to it.
+</p>
+</div>
+
+<div id="outline-container-sec-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> Operation</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+Here we give the input of 2 states, <code>s</code> is the initial state and <code>s</code>' is the final sate and
+the session <code>ses</code> which must be added.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> pred login(s,s':State , ses : Session ){
+</pre>
+</div>
+
+<p>
+The necessary preconditions that must be satisfied by the state and these will be the 
+necessary guards on the operation.
+The session <code>ses</code> that must be added should be present in the final state after adding the session.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> ses in s'.liveSession
+</pre>
+</div>
+
+<p>
+Here , we can perform this operation in simple way thinking that if <code>s</code> is the initial state and <code>s</code>' is the
+final state ,then login of a user in the final state is same as defining an initial state so that we are logging out the user from final state.
+<b>For example, x = y +z is also same as x - z = y i.e, both are the same equations.</b>
+</p>
+
+<p>
+Then we make changes in the relations of <code>s</code>' corresponding to <code>s</code> which is like a Engine to the operationns.
+</p>
+
+<ol class="org-ol">
+<li>Add a new relation between user and session in final state <code>s</code>'.
+</li>
+<li>Add a new role for the session in final state <code>s</code>'.
+</li>
+<li>If the user in the newly created session <code>ses</code> in final state <code>s</code>' is only in one session i.e <code>ses</code>,then add a new user to <code>s</code>'.
+Otherweise,it means that one of the users in some session logged in into another session with another role.
+</li>
+<li>Add the newly created session to liveSession set in final state <code>s</code>' .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">s.userofSession = s'.userofSession - ses -&gt; ses.(s'.userofSession)
+s.roleofSession = s'.roleofSession - ses -&gt; ses.(s'.roleofSession)
+
+
+#(ses.(s'.userofSession)).(s'.session) = 1=&gt; ( s.liveUser=s'.liveUser - ses.(s'.userofSession)
+and (#(ses.(s'.userofSession).(s'.name)).(s'.userOfName) = 1 =&gt; 
+s.liveName = s'.liveName -ses.(s'.userofSession).(s'.name)
+else
+s.liveName = s'.liveName ) )
+else s.liveUser=s'.liveUser 
+
+s.liveSession = s'.liveSession - ses
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-2-2" class="outline-4">
+<h4 id="sec-5-2-2"><span class="section-number-4">5.2.2</span> Result</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+Hence we added a session.(diagram 2.1 and 2.2 show the model of the state before and after login of a user.)
+To run this in alloy, use
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp"> run login for 4 but exactly 2 User,exactly 3 Session,exactly 2 State
+</pre>
+</div>
+
+<p>
+<b>Before login</b>
+</p>
+<p>
+<img src="./diagrams/loginbefore.jpg" alt="loginbefore.jpg" />
+diagram 2.1
+</p>
+
+<p>
+<b>After login</b>
+<img src="./diagrams/loginafter.jpg" alt="loginafter.jpg" />
+diagram 2.2
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Delete User</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+Deletes a user from the State along with the Email and Name related to him .
+</p>
+</div>
+
+<div id="outline-container-sec-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> Operation</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+Here we give the input of the 2 States, <code>s</code> the initial state and <code>s</code>' as the final state 
+and the user <code>u</code> which must be deleted.
+</p>
+
+<p>
+We first check the necessary pre-conditions that must be satisfied by state <code>s</code> and these will be 
+the necessary gaurds on the operation.
+</p>
+
+<ol class="org-ol">
+<li>The user to be deleted should be in the liveUser set of the state <code>s</code> .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">pred deleteUser[s,s':State,u:User]{
+u in s.liveUser  
+#s.updateEmail=0 and #s.updateName=0
+
+s'.updateName = s.updateName
+s'.updateEmail = s.updateEmail
+</pre>
+</div>
+
+<p>
+Then we make changes in all the relations which would be affected by this operation.
+This will the Engine of the operation.
+</p>
+
+<ol class="org-ol">
+<li>Remove the <code>name</code> relation of the user in the final state <code>s</code>' .
+</li>
+<li>Remove the <code>email</code> relation of the user in the final state <code>s</code>' .
+</li>
+<li>Remove the <code>role</code> relation of the user in the final state <code>s</code>' .
+</li>
+<li>Delete the session of the user.
+</li>
+<li>Delete the email from the <code>liveEmail</code> set.
+</li>
+<li>If the name is not shared by other users,then delete the name from the <code>liveName</code> set.
+</li>
+<li>Delete the user from the <code>liveUser</code> set in the final state <code>s</code>' .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">s'.name = s.name - u-&gt;u.(s.name)
+s'.email = s.email - u-&gt;u.(s.email)
+s'.role = s.role - u-&gt;u.(s.role) 
+s'.roleofSession = s.roleofSession - u.(s.session) -&gt; (u.(s.session)).(s.roleofSession)
+s'.session = s.session - u -&gt; u.(s.session)
+
+s'.liveEmail = s.liveEmail - u.(s.email)
+s'.liveSession = s.liveSession - u.(s.session)
+
+#(u.(s.name)).(s.userOfName) = 1 =&gt; 
+s'.liveName = s.liveName - u.(s.name)
+else
+s'.liveName = s.liveName  
+
+s'.liveUser = s.liveUser - u
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-3-2" class="outline-4">
+<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> Result</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+Hence we deleted a user.(diagram 3.1 and 3.2 show the model of the state before and after deletion of a user.)
+To run this in alloy use 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">run deleteUser for 4 but exactly 4 User,exactly 4 Name,exactly 2 State
+run deleteUser for 4 but exactly 4 User,exactly 1 Name,exactly 2 State
+</pre>
+</div>
+<p>
+<b>Before User is deleted</b>
+</p>
+<p>
+<img src="./diagrams/deletebefore.jpg" alt="deletebefore.jpg" />
+diagram 3.1
+</p>
+
+<p>
+<b>After User is deleted</b>
+</p>
+<p>
+<img src="./diagrams/deleteafter.jpg" alt="deleteafter.jpg" />
+diagram 3.2
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Add User</h3>
+<div class="outline-text-3" id="text-5-4">
+<p>
+A user is added with the default role <code>user</code> or <code>admin</code>.
+Added a user to the State along with the Email, Name and Role related to him .
+</p>
+</div>
+
+<div id="outline-container-sec-5-4-1" class="outline-4">
+<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> Operation</h4>
+<div class="outline-text-4" id="text-5-4-1">
+<p>
+Here we give the input of the 2 States, <code>s</code> the initial state and <code>s</code>' as the final state 
+and the user <code>u</code> which must be added.
+</p>
+
+<p>
+Here , we can perform this operation in simple way thinking that if <code>s</code> is the initial state and <code>s</code>' is the
+final state ,then adding a user to the final state is same as defining an initial state so that we are deleting a user from final state.
+<b>For example, x = y +z is also same as x - z = y i.e, both are the same equations.</b>
+</p>
+
+<p>
+We first check the necessary pre-conditions that must be satisfied by state <code>s</code> and these will be 
+the necessary gaurds on the operation.
+</p>
+<ol class="org-ol">
+<li>The user to be added should be present in the <code>liveUser</code> set of the final state <code>s</code>' .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">pred addUser[s,s':State,u:User,r:Role]{
+u in s'.liveUser  
+r in u.(s'.role)
+#s'.updateEmail=0 and #s'.updateName=0
+
+s'.updateName = s.updateName
+s'.updateEmail = s.updateEmail
+</pre>
+</div>
+
+<p>
+Then we make changes in all the relations of <code>s'= corresponding to =s</code> which would be affected by this operation.
+This will the Engine of the operation.
+</p>
+<ol class="org-ol">
+<li>Add the relation <code>name</code> to the user in the final state <code>s</code>' .
+</li>
+<li>Add the relation <code>email</code> to the user in the final state <code>s</code>' .
+</li>
+<li>Add the relation <code>role</code> to the user in the final state <code>s</code>' .
+</li>
+<li>Add the role to the session.
+</li>
+<li>Add email to the <code>liveEmail</code> set .
+</li>
+<li>Add session to the <code>liveSession</code> set.
+</li>
+<li>If the name is not present in the <code>liveName</code> set, add it.
+</li>
+<li>Add the user to the <code>liveUser</code> set.
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">s.name = s'.name - u-&gt;u.(s'.name)
+s.email = s'.email - u-&gt;u.(s'.email)
+s.role = s'.role - u-&gt;u.(s'.role) 
+s.roleofSession = s'.roleofSession - u.(s'.session) -&gt; (u.(s'.session)).(s'.roleofSession)
+s.session = s'.session - u -&gt; u.(s'.session)
+
+
+s.liveEmail = s'.liveEmail - u.(s'.email)
+s.liveSession = s'.liveSession - u.(s'.session)
+#(u.(s.name)).(s.userOfName) = 1 =&gt; 
+s.liveName = s'.liveName - u.(s'.name)
+else
+s.liveName = s'.liveName  
+
+s.liveUser = s'.liveUser - u
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4-2" class="outline-4">
+<h4 id="sec-5-4-2"><span class="section-number-4">5.4.2</span> Result</h4>
+<div class="outline-text-4" id="text-5-4-2">
+<p>
+Hence we added a user.(diagram 4.1 and 4.2 show the model of the state before and after addition of the user)
+To run this in alloy use 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">run addUser for 4 but exactly 2 State
+</pre>
+</div>
+
+<p>
+<b>Before User is added</b>
+</p>
+<p>
+<img src="./diagrams/adduserbefore.jpg" alt="adduserbefore.jpg" />
+diagram 4.1
+</p>
+
+<p>
+<b>After User is added</b>
+</p>
+<p>
+<img src="./diagrams/adduserafter.jpg" alt="adduserafter.jpg" />
+diagram 4.2
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-5" class="outline-3">
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> Update User</h3>
+<div class="outline-text-3" id="text-5-5">
+<p>
+Updates the email or name of the given user.
+</p>
+
+<p>
+A user is updated with <code>updateEmail</code> or <code>updateName</code> or both.
+</p>
+</div>
+<div id="outline-container-sec-5-5-1" class="outline-4">
+<h4 id="sec-5-5-1"><span class="section-number-4">5.5.1</span> Operation</h4>
+<div class="outline-text-4" id="text-5-5-1">
+<p>
+Here we give the input of the 2 States, <code>s</code> the initial state and <code>s</code>' as the final state 
+and the user <code>u</code> which must be added.
+</p>
+
+<p>
+We first check the necessary pre-conditions that must be satisfied by state <code>s</code> and these will be 
+the necessary gaurds on the operation.
+</p>
+<ol class="org-ol">
+<li>The <code>updateName</code> or <code>updateEmail</code> set should be atleast one to make an update to the user.
+</li>
+<li>The role , session and role in the session should be the same before and after the update.
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">pred updateUser[s,s':State,u:User]{
+u in s.liveUser and s.liveUser= s'.liveUser
+#s.updateName=1 or #s.updateEmail=1
+s'.role = s.role
+s'.session = s.session
+s'.roleofSession = s.roleofSession
+</pre>
+</div>
+
+<p>
+Then we make changes in all the relations of <code>s</code>' corresponding to <code>s</code> which would be affected by this operation.
+This will the Engine of the operation.
+</p>
+<ol class="org-ol">
+<li>If <code>updateName</code> set has one name element, then add the name to the user and delete the previous name of the user.Also
+add the new name to the <code>liveName</code> set and delete the previous name from the set.
+</li>
+<li>Similarly with <code>updateEmail</code> .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">    #s.updateName=1 =&gt; 
+    s'.name = s.name + u-&gt;s.updateName - u-&gt;u.(s.name) 
+	and s'.updateName = u.(s.name)
+	and s'.liveName = s.liveName + s.updateName - u.(s.name)
+    else s'.name = s.name 
+	and s'.updateName=s.updateName
+	and s'.liveName = s.liveName 
+
+    #s.updateEmail =1 =&gt;
+    s'.email = s.email + u-&gt;s.updateEmail - u-&gt;u.(s.email)
+	and s'.updateEmail = u.(s.email)
+	and s'.liveEmail = s.liveEmail + s.updateEmail - u.(s.email)
+    else s'.email = s.email 
+	and s'.updateEmail=s.updateEmail
+	and s'.liveEmail = s.liveEmail
+
+ 
+   }
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-5-2" class="outline-4">
+<h4 id="sec-5-5-2"><span class="section-number-4">5.5.2</span> Result</h4>
+<div class="outline-text-4" id="text-5-5-2">
+<p>
+Hence we updated the email or name of the user.(Diagram 5.1 amd 5.2 show the model of the state before and after updating the user.)
+To run this in alloy use 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">run updateUser for 4 but exactly 2 User,exactly 2 State
+</pre>
+</div>
+
+<p>
+<b>Before updating User</b>
+</p>
+<p>
+<img src="./diagrams/updateuserbefore.jpg" alt="updateuserbefore.jpg" />
+    diagram 5.1
+</p>
+
+<p>
+<b>After updating User</b>
+</p>
+<p>
+<img src="./diagrams/updateuserafter.jpg" alt="updateuserafter.jpg" />
+diagram 5.2
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5-6" class="outline-3">
+<h3 id="sec-5-6"><span class="section-number-3">5.6</span> Logout</h3>
+<div class="outline-text-3" id="text-5-6">
+<p>
+Dletes a session from the State.If the user related to the deleted session is in any of the other sessions, then the user is not removed from the state, Else the user along with his relation 
+such as Email,Name(If no other user in the state has its name as this one) are also removed.
+</p>
+</div>
+<div id="outline-container-sec-5-6-1" class="outline-4">
+<h4 id="sec-5-6-1"><span class="section-number-4">5.6.1</span> Operation</h4>
+<div class="outline-text-4" id="text-5-6-1">
+<p>
+Here we give the input of two states, <code>s</code> is the initial state and <code>s</code>' is the final state
+and the session <code>ses</code> that is to be deleted.
+</p>
+
+<p>
+We first check the necessary pre-conditions that must be satisfied by state <code>s</code> and these will be 
+the necessary gaurds on the operation.
+</p>
+<ol class="org-ol">
+<li>The session <code>ses</code> should be present in the set of <code>liveSession</code> in the initial state <code>s</code> .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">pred logout(s,s':State , ses : Session ){
+
+    ses in s.liveSession
+</pre>
+</div>
+
+<p>
+Then we make changes in all the relations which would be affected by this operation.
+This will the Engine of the operation.
+</p>
+
+<ol class="org-ol">
+<li>Remove the relation between user and role of the session in the final sate <code>s</code>' .
+</li>
+<li>If the user is also not present in other sessions, then remove the user,name of the user from their respective sets in the final state <code>s</code>' .
+</li>
+<li>Remove the session from the <code>liveSession</code> set .
+</li>
+</ol>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">    s'.userofSession = s.userofSession - ses -&gt; ses.(s.userofSession)
+    s'.roleofSession = s.roleofSession - ses -&gt; ses.(s.roleofSession)
+	
+    #(ses.(s.userofSession)).(s.session) = 1=&gt; ( s'.liveUser=s.liveUser - ses.(s.userofSession)
+    and (#(ses.(s.userofSession).(s.name)).(s.userOfName) = 1 =&gt; 
+    s'.liveName = s.liveName -ses.(s.userofSession).(s.name)
+    else
+    s'.liveName = s.liveName ) )
+    else s'.liveUser=s.liveUser 
+
+    s'.liveSession = s.liveSession - ses
+   }
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-6-2" class="outline-4">
+<h4 id="sec-5-6-2"><span class="section-number-4">5.6.2</span> Result</h4>
+<div class="outline-text-4" id="text-5-6-2">
+<p>
+Hence we deleted a session.(diagram 6.1 and 6.2 show the model of the state before and after loggin out)
+To run this in alloy , use
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">run logout for 4 but exactly 2 User,exactly 3 Session,exactly 2 State
+</pre>
+</div>
+<p>
+<b>Before logout</b>
+<img src="./diagrams/logoutbefore.jpg" alt="logoutbefore.jpg" />
+diagram 6.1
+</p>
+
+<p>
+<b>After logout</b>
+<img src="./diagrams/logoutafter.jpg" alt="logoutafter.jpg" />
+diagram 6.2
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Check And Assertions</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+Now that we have a Data Model we must keep specific tests that it must pass to check whether the 
+model satisfies the our <b>requirement</b>
+</p>
+</div>
+
+<div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Assertions</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+1.If 2 Users have same email then both the users must be same.(True)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">assert userSameEmail {all u,u':User|u.(State.email)=u'.(State.email) =&gt; u=u'}
+check userSameEmail for 4 but exactly 1 State
+</pre>
+</div>
+<p>
+No Counter Example found.
+</p>
+
+<p>
+2.If 2 Users have same name then both the users must be same.(False)
+  (refer diagram 2.1 for counterexample)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">assert userSameName {all u,u':User|u.(State.name)=u'.(State.name) =&gt; u=u'}
+check userSameName for 4 but exactly 1 State
+</pre>
+</div>
+<p>
+<b>Counterexample</b>
+</p>
+<p>
+<a href="./diagrams/userSameName.jpg%0A">./diagrams/userSameName.jpg</a>
+diagram 2.1
+</p>
+
+<p>
+3.Any User can be deleted.(True)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">deleteOkay: check {all s,s':State,u:User | deleteUser[s,s',u] =&gt; s'.liveUser = s.liveUser -u }
+</pre>
+</div>
+<p>
+No Counter Example found.
+</p>
+
+<p>
+4.Updating only Email of a User. 
+ 4.1 Name might update.(False)
+     (view diagram 2.2.1 and 2.2.2 for counterexample which shows the model of the state before and after updating.)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">assert updateEmail {all u:User,s,s':State | updateUser[s,s',u] =&gt; u.(s.email) != u.(s'.email) }
+check updateEmail for 5 but exactly 2 State
+</pre>
+</div>
+
+<p>
+<b>Counterexample - Name is changed and Email is not changed</b>
+<b>Before</b>
+</p>
+<p>
+<img src="./diagrams/updateuserbefore.jpg" alt="updateuserbefore.jpg" />
+diagram 2.2.1
+</p>
+
+<p>
+<b>After</b>
+</p>
+<p>
+<img src="./diagrams/updateuserafter.jpg" alt="updateuserafter.jpg" />
+diagram 2.2.2
+</p>
+
+<p>
+4.2 Name doesn't update.(True)
+</p>
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="webapp">assert updateEmailOnly {all u:User,s,s':State | no s.updateName and updateUser[s,s',u] =&gt; u.(s.email) != u.(s'.email) }
+check updateEmailOnly for 5 but exactly 2 State
+</pre>
+</div>
+<p>
+No Couter Example found.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Static Model with Session</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>In this model we have approached data-modeling with the perspective of OOP
+</li>
+<li>Where every objects has fields with each having relations defined in the Universal Set
+</li>
+<li>But without any constrains
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="OOP">//This is an Object Oriented Relational Model formed of the web app short course 
+//Before this no object in this model had any relations defined in them but now 
+//because we see it from an  object oriented perspective we find many changes in our model 
+//Advantage Of using this model 
+//1.This gives a better outlook with the real world  objects (Less towards the data-base side)
+//2.As relations are prefined we can have more than one model in the same universe 
+
+//Universal Set contains the following
+
+abstract sig User{
+name:lone Name,
+email:lone Email,
+role:set Role,
+session:lone Session
+}
+
+abstract sig Name{
+userOfName:set User
+}
+
+abstract sig Email{
+userOfEmail:lone User
+}
+
+abstract  sig Session{
+userInSession:lone User,
+roleInSession:lone Role
+}
+
+abstract sig Role{
+userOfRole:set User,
+sessionOfRole:set Session}
+
+one sig Role_User,Role_Admin extends Role{}
+   
+//Bijective relations between Objects 
+fact { 
+   role=~userOfRole
+   name=~userOfName
+   email=~userOfEmail
+   session =~userInSession
+   roleInSession=~sessionOfRole
+   }
+
+//Role and Session to be correctly Mapped
+fact PossibleRolesInSession {all s:State,logged:Session,u:User |
+          u in s.liveUser and logged in s.liveSession and u in logged.userInSession =&gt; 
+          u.role = logged.roleInSession}
+
+
+sig State{
+    liveUser: set User,
+    liveName :set Name,
+    liveEmail :set Email,
+	liveRole: set Role,
+	liveSession : set Session,
+   }
+
+// Cardinality constrains in the specific state
+fact {all u:User | u in State.liveUser =&gt;one u.email } 
+fact {all u:User | u in State.liveUser =&gt;one u.name } 
+fact {all u:User | u in State.liveUser =&gt;some u.role } 
+fact {all e:Email | e in State.liveEmail =&gt; one e.userOfEmail } 
+fact {all n:Name | n in State.liveName =&gt; one n.userOfName } 
+fact {all logged:Session | logged in State.liveSession =&gt; one logged.userInSession and one logged.roleInSession }  
+
+
+//all relations inside the State only
+fact { all u:User,n:Name,s:State| n in u.name =&gt; u in s.liveUser and n in s.liveName} 
+fact { all u:User,e:Email,s:State| e in u.email =&gt; u in s.liveUser and e in s.liveEmail} 
+fact { all u:User,r:Role,s:State| r in u.role =&gt; u in s.liveUser and r in s.liveRole} 
+fact { all u:User,logged:Session,s:State| logged in u.session =&gt; u in s.liveUser and logged in s.liveSession} 
+fact { all r:Role,logged:Session,s:State| r in logged.roleInSession =&gt; r in s.liveRole and logged in s.liveSession} 
+
+pred show{} 
+run show for 4 but exactly 1 State, exactly 3 User,exactly 2 Email,exactly 4 Name,exactly 2 Session
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Static Model</h2>
+<div class="outline-text-2" id="text-8">
+<div class="org-src-container">
+
+<pre class="src src-alloy" id="StaticModel"> // This is a Static Data Model for the web-app-short-course in Alloy.
+// It contains a User and its relations with Name,Email,Role,Session(which can be admin,user only).
+// Using the State Object we can see diffrent state of the web-app when diffrent operations are applied on it
+module webAppShortCourse
+
+// The  Objects in the model 
+abstract sig User{
+role :some Role,
+name:one Name,
+email:one Email
+}
+
+abstract sig Name{
+userOfName:some  User
+}
+
+abstract sig Email{
+userOfEmail:one User  
+}
+
+abstract sig Role{
+userOfRole:set  User
+}
+
+//The diffrent role of Users
+one sig Role_User,Role_Admin extends Role{
+}
+
+fact { name=~userOfName } 
+fact {name=~userOfName}
+fact {email=~userOfEmail}
+
+
+run {} for 1 but exactly 1 User
+run {} for 2 but exactly 2 User
+
+
+//State of the Model
+sig State{
+
+//Users present in the current State
+live: set User,
+
+//Relations with other Objects 
+role: live-&gt; some Role,
+userOfRole: Role -&gt; set live,
+
+name: live -&gt; one Name,
+userOfName: Name -&gt; some  live,
+
+email: live -&gt; one Email,
+userOfEmail: Email -&gt; one live
+}
+{
+role=~userOfRole
+name=~userOfName
+email=~userOfEmail
+//roleInSession in userInSession.role 
+}
+
+//fact atleastOneAdmin { all r:Role_Admin| some u:User| r in u.role  }	
+assert atleastOneAdmin { all r:Role_Admin| some u:User| r in u.role  }	
+check atleastOneAdmin for 4 but exactly 2 User,exactly 1 State
+
+assert alteastOneUser {some u:User |#u &gt; 0}
+check alteastOneUser for 1
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: <span class="timestamp-wrapper"><span class="timestamp">[2016-06-12 Mon]</span></span></p>
+<p class="author">Author: VLEAD</p>
+<p class="date">Created: 2017-08-31 Thu 18:25</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+#+TITLE: =Get-role-set= route of the =Guard= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-11 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+This is the specification and implementation of the
+=get_role_set_in_system= route of the =Guard= component.  
+
+* Checks
+
+ - TypeCheck :: Check whether the instruction consists of
+      the command =get_role_set_in_system= and additionally contains a
+      session object (and nothing else).  The typecheck may
+      be implemented by consulting the [[../../../datatypes/instr/index.org][instruction datatype]]
+      specification.
+
+
+ - AuthCheck :: Check whether the role in the instruction's
+      session is either =user= or =admin=.  (This will
+      always be true since a session's role must either be
+      equal to =Role.user= or an =Role.admin=.
+
+
+ - StateCheck :: Check whether the session in the
+      instruction is indeed an entity currently present in
+      the entity manager's session aggregate.
+
+* Implementation
+
+** Imports and class =GetRoleSet=
+#+BEGIN_SRC python :tangle get_role_set_in_system.py
+import traceback
+from  runtime.exceptions.app.exception import AppException
+from runtime.utils.type_utils.type_utils import check_pred
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.datatypes.instr.get_role_set_in_system.get_role_set_in_system_instr import GetRoleSetInstr
+
+class GetRoleSet:
+
+#+END_SRC
+
+** The type structure of the =get_role_set_in_system= route
+
+The =get_role_set_in_system= route is a dictionary with 'cmd' equal to
+=Cmd.get_role_set_in_system= and a 'session' that is an instance of
+=Session=.
+
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.get_role_set_in_system, 'session': Session.is_inst}
+
+#+END_EXAMPLE
+
+** The =do= method
+The =do= method simply does all the checks.  
+#+BEGIN_SRC python :tangle get_role_set_in_system.py
+    @staticmethod 
+    def do(component, instr):
+        print "get_role_set_in_system: %s" % instr
+
+        GetRoleSet.check_type(instr)
+        GetRoleSet.check_auth(component, instr)
+        GetRoleSet.check_state(component, instr)
+        return instr
+
+#+END_SRC
+
+* Checks
+** Type checks
+
+Check if the the instruction is of the correct shape,
+i.e. satisfies the predicate =GetRoleSetInstr.is_inst=.
+#+BEGIN_SRC python :tangle get_role_set_in_system.py
+    @staticmethod
+    def check_type(instr):
+        check_pred(GetRoleSetInstr.is_inst)(instr)
+        return instr
+
+#+END_SRC
+** Authorization check
+
+Check whether the role in the instruction's session is either =user=
+or =admin=.  (This will always be true since a session's role must
+either be equal to =Role.user= or an =Role.admin=.
+#+BEGIN_SRC python :tangle get_role_set_in_system.py
+    @staticmethod
+    def check_auth(component, instr):
+        return instr
+
+#+END_SRC
+
+** State check
+
+This check passes if the session is already an entity
+present in the entity manager.  Otherwise an =AppException=
+is raised.
+
+#+BEGIN_SRC python :tangle get_role_set_in_system.py
+
+
+    @staticmethod
+    def check_state(component, instr):
+        if not component.em.is_present(instr['session']):
+            raise AppException(op="get_role_set_in_system.chec_state",
+                                   msg="session is not in the entity manager")
+
+        return instr
+
+#+END_SRC
+
+* Package                                                       :boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.get_role_set_in_system package"
+#+END_SRC
+

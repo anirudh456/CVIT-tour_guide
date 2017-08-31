@@ -1,0 +1,36 @@
+#+TITLE: =ArityException= 
+#+DATE: [2017-04-24 Mon]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+The =ArityException= class defines an ArityException exception.  Its type is
+'ArityException' and its =data= field is a dictionary with a field called
+=msg=.
+
+* =ArityException= 
+
+#+name: class_ArityException
+#+BEGIN_SRC python :tangle exception.py
+
+class ArityException(Exception):
+    lm = None
+
+    def __init__(self, **litmap):
+        self.lm = {'type': 'ArityException', 'data': litmap}
+
+    def __str__(self):
+        return repr(self.lm)
+
+    # to_client : ArityException -> Litmap
+    def to_client(self):
+        return self.lm
+#+END_SRC
+
+* Tangle                          :boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "arity_exception package"
+#+END_SRC

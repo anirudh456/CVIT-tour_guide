@@ -1,0 +1,56 @@
+#+TITLE: =del_role= route of the =Engine= component
+#+AUTHOR: Anirudh Reddy
+#+DATE: [2017-06-27 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =del_role= route of the
+  =Engine= component.
+
+
+* Implementation
+
+** Imports and class =DelRole=
+#+BEGIN_SRC python :tangle del_role.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+
+class DelRole:
+
+#+END_SRC
+
+** The type structure of the =del_role= route
+
+   The =del_role= route is a dictionary with 'cmd' equal to =Cmd.del_role=
+   and a 'session' that is an instance of =Session=.
+
+** The =do= method
+The =do= method performs the del operation on the entities.  Should return a
+dictionary with 'result' as the rolelist of user after deletion and 'instr' as the instruction
+passed.
+
+#+BEGIN_SRC python :tangle del_role.py
+    @staticmethod 
+    def do(obj, instr):
+        user = instr['data']['user']
+        obj.em.delete_user(user)
+        delrole = instr['data']['delrole']
+        user.remove_role(delrole)
+        rolelist = user.get('roles')
+        obj.em.add_user(user)
+        return {'instr': instr, 'result': rolelist}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.del_role package"
+#+END_SRC
+

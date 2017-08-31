@@ -1,0 +1,57 @@
+#+TITLE: =add_role= route of the =Engine= component
+#+AUTHOR: Anirudh Reedy
+#+DATE: [2017-06-27 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =add_role= route of the
+  =Engine= component.
+
+
+* Implementation
+
+** Imports and class =AddRole=
+#+BEGIN_SRC python :tangle add_role.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+from runtime.objects.role.role import Role
+
+class AddRole:
+
+#+END_SRC
+
+** The type structure of the =add_role= route
+
+   The =add_role= route is a dictionary with 'cmd' equal to =Cmd.add_role=
+   and a 'session' that is an instance of =Session=.
+
+** The =do= method
+The =do= method performs the add operation on the entities.  Should return a
+dictionary with 'result' the newly added role and 'instr' as the instruction
+passed.
+
+#+BEGIN_SRC python :tangle add_role.py
+    @staticmethod 
+    def do(obj, instr):
+        user = instr['data']['user']
+        obj.em.delete_user(user)
+        addrole = instr['data']['addrole']
+        user.append_role(addrole)
+        rolelist = user.get('roles')
+        obj.em.add_user(user)
+        return {'instr': instr, 'result': rolelist}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.add_role package"
+#+END_SRC
+

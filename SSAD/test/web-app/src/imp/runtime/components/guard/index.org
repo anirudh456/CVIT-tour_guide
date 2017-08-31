@@ -1,0 +1,46 @@
+#+title:  Guard component
+
+* Introduction
+
+The Guard performs the following  checks:
+
+   - TypeCheck
+
+   - AuthCheck
+
+   - StateCheck
+
+If any of the checks fail, an exception is raised.   If all
+the checks pass, the guard simply returns the instruction. 
+
+The definitions of the checks depend on the route.  Please
+consult the specific routes (e.g., [[./show_users/index.org][=show-users=]]) to find the
+checks.
+
+
+#+BEGIN_EXAMPLE
+ShowUsers.do : Instr -> Instr
+               throws AppException, ArityException, TypeException
+#+END_EXAMPLE
+
+
+
+* Implementation
+
+#+BEGIN_SRC python :tangle guard.py
+from runtime.utils.components.generic_component import GenericComponent
+class Guard(GenericComponent):
+
+    def __init__(self, em):
+        GenericComponent.__init__(self) 
+        self.em = em
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.show_users package"
+#+END_SRC
+
+

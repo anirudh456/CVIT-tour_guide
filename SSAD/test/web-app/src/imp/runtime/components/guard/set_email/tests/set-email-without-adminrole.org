@@ -1,0 +1,71 @@
+#+title: Test on set_email route when the role in the session is not admin
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-3 Mon]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestSetEmail= object holds an instance of the =SetEmail= component
+  against the field =component=.  This test invokes the =do= method on the
+  component and an =Exception= when state check is performed.
+
+** Imports
+#+BEGIN_SRC python :tangle test_set_email_with_user_role.py
+import unittest
+from runtime.objects.email.email import Email
+from runtime.objects.name.name import Name
+from runtime.objects.role.role import Role
+from runtime.objects.user.user import User
+from runtime.objects.session.session import Session
+from runtime.components.guard.set_email.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test
+   creates an instruction with cmd =set_email= and a session.  The
+   entity manager does not hold a session contained in the
+   instruction.  The guard's do method raises an =Exception=.
+
+   Following are the steps to be taken:
+    - Create a new user with user role
+    - Add it to User set using entity manager
+    - Create a session with this user in it and a random key
+    - Add this session to the Session set using entity manager
+    - Create another new user object (the one to which email is updated
+      ).  Add it to the user set using the entity
+      manager.
+    - Create the instruction datatypes for =set_email= route with
+      the above session and to set email to this newly created user.
+    - Call the guard's =do=  with this instruction.
+
+#+BEGIN_SRC python :tangle test_set_email_with_user_role.py
+class TestCheckAuth(TestHarness):
+
+    def test_check_auth(self):
+        print "test_check_auth"
+        session = self.session
+        session = Session(user=self.d_user, role=Role.user, key="12345678")
+        self.component.em.add_session(session)
+
+        n_user = User(name=Name(val="new user"),
+                    email=Email(val="n@gnu.org"),
+                    roles=[Role.user])
+
+        self.component.em.add_user(n_user)
+
+        instr = {'cmd': Cmd.set_email, 
+                 'session': session, 
+                 'data': {'user': n_user,
+                          'setemail': Email(val="duser@gnu.org")}
+        } 
+        guard = self.component
+        with self.assertRaises(Exception):
+            guard.do(instr)
+
+#+END_SRC

@@ -1,0 +1,45 @@
+#+title: Test on add_users route with wrong type of arguments
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestAddUser= object holds an instance of the =AddUser= component against
+  the field =component=.  This test invokes the =do= method on the component.
+  The instruction is created with wrong types.
+
+** Imports
+#+BEGIN_SRC python :tangle test_wrong_arg_types.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.exceptions.app.exception import AppException
+from runtime.exceptions.arity.exception import ArityException
+from runtime.exceptions.keymismatch.exception import KeyMismatchException
+from runtime.components.guard.add_user.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component. This test creates an
+   instruction with cmd =add_user= and a session that is not of type
+   session. The guard's do method raises =TypeError=.
+
+#+BEGIN_SRC python :tangle test_wrong_arg_types.py
+class TestWrongArguments(TestHarness):
+
+    def test_wrong_arg_types(self):
+        print "test_with_wrong_type_arguments"
+
+        session = self.session
+        instr = {'cmd': Cmd.add_user, 'session': 'xyz'}
+        guard = self.component
+        with self.assertRaises(TypeError):
+            guard.do(instr)
+
+#+END_SRC

@@ -1,0 +1,31 @@
+#+title: Entity Managers
+
+* Entity Managers
+
+ - Safe
+ - Unsafe
+
+* Exception
+#+BEGIN_SRC python :tangle volatile_entity_mgr_exception.py
+class VolatileEntityMgrException(Exception):
+    lm = None
+
+    def __init__(self, **litmap):
+        self.lm = {'type': 'VolatileEntityMgrException', 'data': litmap}
+
+    def __str__(self):
+        return repr(self.lm)
+
+    # to_client : AppException -> Litmap
+    def to_client(self):
+        return self.lm
+#+END_SRC
+
+
+
+#+END_SRC
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.utils.entitymgrs.volatile package"
+
+#+END_SRC

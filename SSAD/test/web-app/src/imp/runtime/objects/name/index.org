@@ -1,0 +1,56 @@
+#+TITLE: Name Object
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Name
+=Name= is a value class with type =is_alphabetic_str=.
+
+#+begin_src python :tangle name.py
+from runtime.utils.type_utils.type_utils import is_alphabetic_str
+from runtime.utils.factories.property_class_factory import PropertyClassFactory
+
+Name = PropertyClassFactory.mk_class("Name", ['val'], val=is_alphabetic_str)
+
+#+end_src
+
+* Test Name
+
+#+BEGIN_SRC python  :tangle test_name.py
+import unittest
+from unittest import TestCase
+from runtime.objects.name.name import Name
+
+class TestName(TestCase):
+    TESTING = True
+
+    def test_instantiate_name(self):
+        print "test_instantiate_name"
+        self.assertEqual(Name.is_inst(Name(val="Jimi Hendrix")), True)
+        self.assertEqual(Name(val="Jimi Hendrix").get("val"), "Jimi Hendrix")
+        self.assertRaises(TypeError, Name, val="Jimi 123 Hendrix")
+
+    def test_name_equality(self):
+
+        print "test_name_equality"
+        self.assertEqual(Name(val="Jimi Hendrix") == 
+                         Name(val="Jimi Hendrix"), 
+                         True)
+
+        self.assertEqual(Name(val="Jimi Hendrix") == 
+                         Name(val="Bo Didley"), 
+                         False)
+
+#+END_SRC
+
+
+* Tangle														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "name package"
+
+#+END_SRC
+
+

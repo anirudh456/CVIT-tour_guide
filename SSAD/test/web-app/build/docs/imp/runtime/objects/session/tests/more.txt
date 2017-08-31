@@ -1,0 +1,47 @@
+        session = Session(user=user, role=role, key=d_key)
+
+        self.assertEqual(Session.is_inst(session), True)
+
+    def test_sets_on_session(self):
+        print "test_sets_on_session"
+        user = User(name=Name(val="Jimi Hendrix"),
+                    email=Email(val="jimi@gnu.org"),
+                    roles=[])
+
+        role = Role(val="admin")
+        d_key = "kdshfkjdahfjdhfkjd"
+        session = Session(user=user, role=role, key=d_key)
+
+        user = User(name=Name(val="Bo Didley"),
+                    email=Email(val="didley@gnu.org"),
+                    roles=[])
+
+        session.set(user=user)
+        self.assertEqual(session.get("user").get("email").get("val"),
+                         "didley@gnu.org")
+
+    def test_equality_on_session(self):
+        print "test_equality_on_session"
+        role1 = Role(val="admin")
+        role2 = Role(val="user")
+
+        user1 = User(name=Name(val="Jimi Hendrix"),
+                    email=Email(val="jimi@gnu.org"),
+                    roles=[role1])
+
+        user2 = User(name=Name(val="Jimi Hendrix"),
+                    email=Email(val="jimi@gmail.org"),
+                    roles=[role1])
+
+        d_key = "kdshfkjdahfjdhfkjd"
+
+        session1 = Session(user=user1, role=role1, key=d_key)
+        session2 = Session(user=user1, role=role1, key=d_key)
+        session3 = Session(user=user1, role=role2, key=d_key)
+        session4 = Session(user=user1, role=role1, key="123")
+        self.assertEqual(session1 == session2, True)
+        self.assertEqual(session1 == session3, True)
+        self.assertEqual(session1 == session4, False)
+
+
+

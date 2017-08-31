@@ -1,0 +1,46 @@
+#+title: Test on del_user route when session is not present in the entity manager
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestDelUser= object holds an instance of the =DelUser= component
+  against the field =component=.  This test invokes the =do= method on the
+  component and an =Exception= when state check is performed.
+
+** Imports
+#+BEGIN_SRC python :tangle test_no_session.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.components.guard.del_user.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test creates an
+   instruction with cmd =del_user= and a session.  The entity manager does not
+   hold a session contained in the instruction.  The guard's do method raises an
+   =Exception=.
+
+#+BEGIN_SRC python :tangle test_no_session.py
+class TestNoSession(TestHarness):
+
+    def test_no_session(self):
+        print "test_no_session"
+        # delete session from entity manager setup in the TestHarness
+        self.component.em.delete_session(self.session)
+        session = self.session
+        instr = {'cmd': Cmd.del_user, 
+                 'session': session, 
+                 'data': {'user': self.d_user}}
+        guard = self.component
+        with self.assertRaises(Exception):
+            guard.do(instr)
+
+#+END_SRC

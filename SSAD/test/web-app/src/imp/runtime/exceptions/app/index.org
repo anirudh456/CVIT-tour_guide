@@ -1,0 +1,37 @@
+#+TITLE: =AppException= 
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-07 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+The =AppException= class defines an application specific
+exception.  Its type is 'AppException' and its =data= field
+is a dictionary with  a field called =msg=.
+
+* =AppException= 
+
+#+name: class_AppException
+#+BEGIN_SRC python :tangle exception.py
+
+class AppException(Exception):
+    lm = None
+
+    def __init__(self, **litmap):
+        self.lm = {'type': 'AppException', 'data': litmap}
+
+    def __str__(self):
+        return repr(self.lm)
+
+    # to_client : AppException -> Litmap
+    def to_client(self):
+        return self.lm
+#+END_SRC
+
+* Tangle                          :boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "app_exception package"
+#+END_SRC

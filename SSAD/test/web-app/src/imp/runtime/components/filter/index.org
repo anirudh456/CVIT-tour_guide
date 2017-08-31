@@ -1,0 +1,42 @@
+#+TITLE: Filter component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-16 Sun] 
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Introduction
+
+  The Filter filters the final result that is to be shown.  This is
+  achieved by invoking the API of the entity manager.  The filter on it's own
+  does not generate any exceptions.  
+
+
+
+#+BEGIN_EXAMPLE
+Filter.do : Instr -> Instr, Result
+#+END_EXAMPLE
+
+
+
+* Implementation
+
+#+BEGIN_SRC python :tangle filter.py
+from runtime.utils.components.generic_component import GenericComponent
+class Filter(GenericComponent):
+
+    def __init__(self, em):
+        GenericComponent.__init__(self) 
+        self.em = em
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.filter.show_users package"
+#+END_SRC
+
+

@@ -1,0 +1,42 @@
+#+TITLE: Engine component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-16 Sun] 
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Introduction
+
+  The Engine performs CRUD opearations on the state of the system.  This is
+  achieved by invoking the API of the entity manager.  The engine on it's own
+  does not generate any exceptions.  
+
+
+
+#+BEGIN_EXAMPLE
+Engine.do : Instr -> Instr, Result
+#+END_EXAMPLE
+
+
+
+* Implementation
+
+#+BEGIN_SRC python :tangle engine.py
+from runtime.utils.components.generic_component import GenericComponent
+class Engine(GenericComponent):
+
+    def __init__(self, em):
+        GenericComponent.__init__(self) 
+        self.em = em
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.show_users package"
+#+END_SRC
+
+

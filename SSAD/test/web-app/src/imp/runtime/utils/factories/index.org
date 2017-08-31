@@ -1,0 +1,33 @@
+#+title: Factories
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-07 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Package =runtime.utils.factories=
+
+* Introduction
+
+Factories are classes or objects that create other classes
+or objects.  At present, there is one factory in the
+application, which creates property classes (classes with
+whose fields are specifiable via type constraints and an
+invariant between the fields).
+
+All the object classes (=Email=, =Name=, etc.) are defined
+using property class factory. 
+
+ - [[./property-class-factory.org][Property Class Factory]]
+
+
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.utils.factories package"
+#+END_SRC
+
+

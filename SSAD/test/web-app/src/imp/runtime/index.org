@@ -1,0 +1,40 @@
+#+TITLE: Runtime of Application
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Runtime of the Application
+The =runtime= is organised as follows:
+
+ - [[./components/index.org][components]] :: The different kinds of components used by
+      the application.
+
+
+ - [[./datatypes/index.org][datatypes]] :: The different kinds wire datatypes used to
+      connect the components.
+
+
+ - [[./emgrs/index.org][emgrs]] :: The different kinds of constraints and the
+      entity manager used by the application.
+
+ - [[./exceptions/index.org][exceptions]]  :: Application specific exceptions are
+      defined here.
+
+ - [[./objects/index.org][objects]]  ::  the definitions of the entity objects used
+      by the application.
+
+ - [[./utils/index.org][utils]] :: This directory defines various classes and
+      objects used across all components.
+
+ - [[./workflows/index.org][workflows]] :: This directory defines various workflows
+      obtained by composing components.  
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime package"
+#+END_SRC

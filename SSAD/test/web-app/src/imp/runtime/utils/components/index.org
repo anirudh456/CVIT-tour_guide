@@ -1,0 +1,35 @@
+#+title:  Generic Component
+
+* Introduction
+
+A generic component.  Supports addition of command handlers
+and provides a =do= method.
+
+* Implementation
+
+#+BEGIN_SRC python :tangle generic_component.py
+from runtime.exceptions.app.exception import AppException
+
+class GenericComponent:
+    def __init__(self):
+        self.method_map = {}
+
+    def add_cmd_handler(self, cmd, handler):
+        self.method_map[cmd] = handler
+
+    def do(self, spec):
+        cmd=spec['cmd']
+        if cmd not in self.method_map.keys():
+            raise AppException(op=cmd, msg="Unimplemented command")
+
+        m = self.method_map[cmd]
+        return m(self, spec)
+
+#+END_SRC
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.show_users package"
+#+END_SRC
+
+

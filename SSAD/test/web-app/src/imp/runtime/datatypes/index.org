@@ -1,0 +1,32 @@
+#+title: Datatypes of the wires: instructions and results
+#+DATE: [2017-04-27 Thu]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+There are two types of wires in this application.  Each wire
+is used to connect two components. 
+
+Things that flow on wire are always dictionaries.   Each of
+the wire datatypes carry a =spec= field that describe the
+shape of the dictionary.  
+
+ - [[./instr/index.org][instr]] :: An instruction comes in as input to the Guard.
+      The Guard returns the instruction if the instruction
+      survives the Guard's scrutiny.  An instruction has a
+      command ([[./cmd/index.org][cmd]]), which may be either a =show_user=, or
+      =add_user=, or =del_user=.    
+
+
+ - [[./result/index.org][result]] ::  A result datatype combines the value returned
+      by the engine with the input to the guard.
+
+
+
+* Package 
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.datatypes package"
+#+END_SRC

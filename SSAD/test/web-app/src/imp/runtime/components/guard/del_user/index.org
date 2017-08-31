@@ -1,0 +1,162 @@
+#+TITLE: =del_user= route of the =Guard= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+This is the specification and implementation of the
+=del_user= route of the =Guard= component.  
+
+* Checks
+
+ - TypeCheck :: Check whether the instruction satisfies
+      the  [[../../../datatypes/instr/del_user/index.org][=DelUserInstr.is_inst=]] predicate.
+
+
+ - AuthCheck :: Check whether the role in the =del_user=
+      instruction's session is =admin=.  Only admins are
+      allowed to create or delete users.
+
+
+ - StateCheck :: Check whether the session in the
+      instruction is indeed an entity currently present in
+      the entity manager's session aggregate.  
+
+
+ Note that there is a referential integrity constraint that
+ the user being deleted is present in the entity manager's
+ aggregate.  This constraint is checked by the safe entity
+ manager, so there is no need to check it in the guard.
+
+* Implementation
+** Imports and class =DelUser=
+#+BEGIN_SRC python :tangle del_user.py
+import traceback
+from runtime.exceptions.app.exception import AppException
+from runtime.utils.type_utils.type_utils import check_pred
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.objects.role.role import Role
+from runtime.datatypes.instr.del_user.del_user_instr import DelUserInstr
+
+class DelUser:
+
+#+END_SRC
+
+** The type structure of the =del_user= route
+
+The =del_user= route is a dictionary with 'cmd' equal to
+=Cmd.del_user=, a 'session' that is an instance of
+=Session= and data, which is a dictionary with one field
+'user' of type =User.is_inst=.
+
+** The =do= method
+The =do= method simply does all the checks.  
+#+BEGIN_SRC python :tangle del_user.py
+    @staticmethod 
+    def do(obj, instr):
+        print "del_user: %s" % instr
+
+        DelUser.check_type(instr)
+        DelUser.check_auth(obj, instr)
+        DelUser.check_state(obj, instr)
+        return instr
+
+#+END_SRC
+
+* Checks
+** Type checks
+
+Check if the the instruction if of correct shape,
+i.e. satisfies predicate =DelUserInstr.is_inst=
+
+#+BEGIN_SRC python :tangle del_user.py
+    @staticmethod
+    def check_type(instr):
+        check_pred(DelUserInstr.is_inst)(instr)
+
+#+END_SRC
+
+** Authorization check
+
+The Authorization checks for the following two authorization
+constraints:
+
+   1. Only an =admin= may perform the =del_user= operation
+ 
+   2. A user can not delete himself/herself.
+
+
+
+*** Steps
+
+    1. Retrieve the session from the instr
+ 
+    2. Retrieve the user from the session
+
+    3. Retrieve the role from the session
+
+    4. If the role is not an admin role (=Role.admin=) then
+       raise an exception.
+
+    5. Get the user to be delete from the instruction's data
+       key.
+
+    6. If the session's user is the same as the user to be
+       deleted, raise an exception.
+
+
+#+BEGIN_SRC python :tangle del_user.py
+    @staticmethod
+    def check_auth(obj, instr):
+        session = instr['session']
+        user = session.get("user")
+        role = session.get("role")
+        if role != Role.admin:
+            raise AppException(op="del_user.check_auth", 
+                msg="Only admin can delete a user")
+        if user == instr['data']['user']:
+            raise AppException(op="del_user.check_auth",
+                msg="You cannot delete yourself")
+        
+
+#+END_SRC
+
+** State check
+
+This check passes if the session is already an entity
+present in the entity manager.  Otherwise an =AppException=
+is raised.
+
+
+    1. Retrieve the session from the instruction.
+ 
+    2. Retrieve the entity manager from the component.
+ 
+    3. Check if the session is present in the entity
+       manager. 
+
+    4. If the session is not present, then raise an
+       exception.  The instruction's session must always be
+       in the session aggregate managed by the entity
+       manager.
+
+#+BEGIN_SRC python :tangle del_user.py
+
+    @staticmethod
+    def check_state(obj, instr):
+        if not obj.em.is_present(instr['session']):
+            raise AppException(op="del_user.check_state", 
+                msg= "session is not in the entity manager")
+
+#+END_SRC
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.del_user package"
+#+END_SRC
+

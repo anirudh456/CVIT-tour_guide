@@ -1,0 +1,32 @@
+#+title:  Testing  App Safe Volatile Entity Manager
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-07 Tue] 
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test Harness
+
+#+BEGIN_SRC python :tangle test_harness.py
+import unittest
+from unittest import TestCase
+from runtime.emgrs.svem.svem import EntityMgr
+
+class TestHarness(TestCase):
+    def setUp(self):
+      self.em = EntityMgr()
+
+    def tearDown(self):
+      self.em = None
+
+#+END_SRC
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.emgrs.volatile.safe.tests package"
+
+#+END_SRC
+
+

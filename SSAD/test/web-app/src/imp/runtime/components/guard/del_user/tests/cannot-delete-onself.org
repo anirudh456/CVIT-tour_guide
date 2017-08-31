@@ -1,0 +1,45 @@
+#+title: Test on del_user route when the role in the session is not admin
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test 
+  =TestDelUser= object holds an instance of the =DelUser= component
+  against the field =component=.  This test invokes the =do= method on the
+  component and an =Exception= when state check is performed.
+
+** Imports
+#+BEGIN_SRC python :tangle test_cannot_delete_oneself.py
+import unittest
+from runtime.objects.session.session import Session
+from runtime.components.guard.del_user.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component.  This test creates an
+   instruction with cmd =del_user= and a session.  The entity manager does not
+   hold a session contained in the instruction.  The guard's do method raises an
+   =Exception=.
+
+#+BEGIN_SRC python :tangle test_cannot_delete_oneself.py
+class TestCannotDeleteOnself(TestHarness):
+
+    def test_cannot_delete_oneself(self):
+        print "test_cannot_delete_oneself"
+
+        instr = {'cmd': Cmd.del_user, 
+                 'session': self.session, 
+                 'data': {'user': self.user}}
+
+        guard = self.component
+        with self.assertRaises(Exception):
+            guard.do(instr)
+
+#+END_SRC

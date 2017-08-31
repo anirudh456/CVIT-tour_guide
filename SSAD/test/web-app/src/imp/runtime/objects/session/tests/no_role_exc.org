@@ -1,0 +1,18 @@
+#+title:  Test session creation with no role.  Raises exception
+
+* Test
+
+We try to create a session without a role.  This should
+raise an exception because the session constructor expects a
+role. 
+
+#+BEGIN_SRC python :tangle test_no_role_exc.py
+from runtime.objects.session.session import Session
+from runtime.objects.session.tests.test_harness import TestHarness
+
+class TestSessionWithNoRole(TestHarness):
+
+    def test_session_with_no_role(self):
+        with self.assertRaises(Exception):
+            Session(user=self.user_with_no_role, key=self.key)
+#+END_SRC

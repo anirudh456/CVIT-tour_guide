@@ -1,0 +1,13 @@
+#+title:  Entity Managers
+
+* Introduction
+This holds the different types of entity managers
+
+ - Volatile
+ - sqlalchemy could also go in
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.utils.entitymgrs package"
+
+#+END_SRC

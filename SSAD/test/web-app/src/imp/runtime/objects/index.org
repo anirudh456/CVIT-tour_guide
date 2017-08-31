@@ -1,0 +1,29 @@
+#+TITLE: Objects
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-16 Sun] 
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+This package contains subpackages, one for each of the
+entity objects of the application. 
+
+ - [[./email/index.org][Email]]
+
+ - [[./name/index.org][Name]]
+
+ - [[./role/index.org][Role]]
+
+ - [[./session/index.org][Session]]
+
+ - [[./user/index.org][User]]
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "objects package"
+
+#+END_SRC

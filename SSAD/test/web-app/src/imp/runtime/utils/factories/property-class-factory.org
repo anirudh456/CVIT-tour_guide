@@ -1,0 +1,60 @@
+#+title:  Property Class Factory
+
+* Introduction
+
+This factory produces property classes.
+
+Property classes are classes with property fields and a
+standard interface for getting and setting them, and a
+subset of property fields used for determining equality.
+
+The specification to produce a class includes the class's
+name, its keys (the set of fields used to identify two
+instances of the class), and its attributes and their types.
+
+* Usage
+
+#+BEGIN_EXAMPLE
+Email = PropertyClassFactory.mk_class("Email", ['val'], val=is_email_str)
+
+Name = PropertyClassFactory.mk_class("Name", ['val'], val=is_alphabetic_str)
+
+Role = PropertyClassFactory.mk_class("Role", ['val'], val=is_role_str)
+
+User = PropertyClassFactory.mk_class("User", ['email'], 
+                                      email=Email.is_inst, 
+                                      name=Name.is_inst,
+                                      roles=list_of(Role.is_inst))
+
+Session = PropertyClassFactory.mk_class("Session", ['key'], 
+                                 user=User.is_inst, role=Role.is_inst, 
+                                 key=is_str)
+#+END_EXAMPLE
+* Implementation
+
+#+BEGIN_SRC python :tangle property_class_factory.py
+from  runtime.utils.class_templates.class_templates import ClassTemplate
+from  runtime.utils.type_utils.type_utils import is_inst
+from  runtime.utils.type_utils.type_utils import check_pred
+class PropertyClassFactory():
+
+#    User = mk_class("User", ['email'], email=Email.is_inst, name=Name.is_inst)
+    @staticmethod
+    def mk_class(_name, _unique_keys, **args):
+        cls = ClassTemplate.mk_class(_name)
+        cls.is_inst = staticmethod(is_inst(cls))
+        cls.check_inst = staticmethod(check_pred(cls.is_inst))
+        cls.add_attributes(**args)
+        cls.__eq__ = lambda self, other: \
+                         self.is_inst(other) and \
+                         all(map(lambda key: self.get(key) == other.get(key),
+                                 _unique_keys))
+        return cls
+#+END_SRC
+
+* Note
+
+=PropertyClassFactory= and =ClassTemplate= should be folded
+into one class.
+
+

@@ -1,0 +1,55 @@
+#+TITLE: Email Object
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Email
+=Email= is a value class with type =is_email_str=.
+
+#+begin_src python :tangle email.py
+from runtime.utils.type_utils.type_utils  import is_email_str
+from runtime.utils.factories.property_class_factory import PropertyClassFactory
+
+Email = PropertyClassFactory.mk_class("Email", ['val'], val=is_email_str)
+
+#+end_src
+
+* Test Email
+
+#+BEGIN_SRC python  :tangle test_email.py
+import unittest
+from unittest import TestCase
+from runtime.objects.email.email import Email
+
+class TestEmail(TestCase):
+    TESTING = True
+
+    def test_instantiate_email(self):
+        print "test_instantiate_email"
+        self.assertEqual(Email.is_inst(Email(val="jhx@g.com")), True)
+        self.assertEqual(Email(val="jhx@g.com").get("val"), "jhx@g.com")
+        self.assertRaises(TypeError, Email, val="Jimi 123 Hendrix")
+
+    def test_email_equality(self):
+
+        print "test_email_equality"
+        self.assertEqual(Email(val="jhx@g.com") == 
+                         Email(val="jhx@g.com"), 
+                         True)
+
+        self.assertEqual(Email(val="jhx@g.com") == 
+                         Email(val="bod@g.com"), 
+                         False)
+
+#+END_SRC
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "email package"
+#+END_SRC
+
+

@@ -1,0 +1,27 @@
+#+TITLE: Steps to install alloy analyzer
+#+AUTHOR: VLEAD
+#+DATE: [2017-06-14 Wed]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+  This document illustrates the installation of [[http://alloy.mit.edu/alloy/download.html][alloy]].
+
+* Installation Steps
+  
+  1. Install Open JDK
+     #+BEGIN_EXAMPLE
+     sudo apt-get install openjdk-8-jre
+     #+END_EXAMPLE
+
+  2. Download alloy
+     #+BEGIN_EXAMPLE
+     wget http://alloy.mit.edu/alloy/downloads/alloy4.2.jar
+     #+END_EXAMPLE
+
+* Run Alloy
+  #+BEGIN_EXAMPLE
+  java -jar alloy4.2.jar
+  #+END_EXAMPLE

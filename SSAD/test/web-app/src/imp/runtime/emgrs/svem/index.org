@@ -1,0 +1,117 @@
+#+TITLE: The Application's Entity Manager
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-22 Sat] 
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+This document defines =EntityMgr=, the entity manager for
+the user directory application.  
+
+It does the following:
+
+
+  1) Inherits from the utility [[../../utils/entitymgrs/volatile/safe/index.org][SafeVolatileEntityMgr]].  
+
+  2) Registers =User= and =Session= objects as entities and
+     allows for safe CRUD operations on them.
+
+  3) Implements the operations on =User= and =Session=
+     entities. 
+
+
+* Constraints implemented by the Application's Entity Manager
+
+
+
+
+* Inherit and Register objects as entities
+
+#+BEGIN_SRC python :tangle svem.py
+from  runtime.objects.user.user import User
+from  runtime.objects.session.session import Session
+from  runtime.utils.entitymgrs.volatile.safe.svem import SafeVolatileEntityMgr
+from runtime.utils.type_utils.type_utils import check_pred
+
+class EntityMgr(SafeVolatileEntityMgr):
+    def __init__(self):
+
+        SafeVolatileEntityMgr.__init__(self)
+
+        self.register_as_entity(User)
+        self.register_as_entity(Session)
+
+#+END_SRC
+
+Then, operations on the entities are defined using the
+generic operations inherited from [[../../utils/entitymgrs/volatile/safe/index.org][SafeVolatileEntityMgr]].
+
+
+* User operations
+
+** Add User
+#+BEGIN_SRC python :tangle svem.py
+    def add_user(self, user):
+        # check if user satisfies the User.is_inst predicate
+        # i.e., if user is an instance of User
+        check_pred(User.is_inst)(user)
+        self.safe_add(user)
+
+#+END_SRC
+
+** Delete User
+#+BEGIN_SRC python :tangle svem.py
+    def delete_user(self, user):
+        check_pred(User.is_inst)(user)
+        # make sure there is no session whose user is the given user 
+        check_pred(lambda u: self.apply_filters(Session, user=u) == [])(user)
+        self.safe_delete(user)
+
+#+END_SRC
+
+** Update User
+#+BEGIN_SRC python :tangle svem.py
+    def update_user(self, user, **args):
+        check_pred(User.is_inst)(user)
+        self.safe_update(user, **args)
+
+#+END_SRC
+
+* Session
+
+** Add Session
+#+BEGIN_SRC python :tangle svem.py
+    def add_session(self, session):
+        check_pred(Session.is_inst)(session)
+        # make sure that the user of the session
+        # exists in the user set
+        check_pred(lambda s: self.is_present(s.get('user')))(session)
+        self.safe_add(session)
+
+#+END_SRC
+
+** Delete Session
+#+BEGIN_SRC python :tangle svem.py
+    def delete_session(self, session):
+        check_pred(Session.is_inst)(session)
+        self.safe_delete(session)
+
+#+END_SRC
+
+** Update Session
+#+BEGIN_SRC python :tangle svem.py
+    def update_session(self, session, **args):
+        check_pred(Session.is_inst)(session)
+        self.safe_update(session, **args)
+
+#+END_SRC
+
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.emgrs.svem package"
+#+END_SRC

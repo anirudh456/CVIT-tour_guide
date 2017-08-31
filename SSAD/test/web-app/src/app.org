@@ -1,0 +1,118 @@
+#+title: Application 
+#+AUTHOR: ITWS2 Instructors
+#+DATE: [2017-04-27 Thu]
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Application
+
+The implementation that you are seeing is a collection of
+components, datatypes, objects, entity managers and
+workflows that form a part of a stripped down version of the
+user directory application.  This 'application' has no front
+end, no database, no concurrency and no web (REST)
+interface.
+
+** Components and Entity Manager
+The implementation consists of two components and an entity
+manager
+
+ - Guard :: The guard takes an instruction.  If the
+      instruction is safe to execute, it returns the
+      instruction.  Otherwise it throws an exception. An
+      instruction is safe to execute if it satisfies the
+      arity, type and authorization and state checks (the
+      last two being governed by the application's
+      requirements).  In order to determine if the
+      instruction is safe to execute, the guard calls the
+      entity manager.
+
+ - Entity Manager :: The entity manager manages a collection
+      of user and session entity objects.  The entities are
+      volatile.  (There is no persistence).  The entity
+      manager implements basic referential integrity
+      constraints:
+
+         + An entity may be added to the aggregate only if
+           it is not already present in it.
+
+         + An entity may be deleted from the aggregate only
+           if it is already present in the aggregate.
+
+         + An entity may be updated only if the updated
+           value isn't equal to an entity already in the
+           aggregate. 
+
+
+ - Engine :: The Engine accepts an instruction from the
+      guard and, based on the input, invokes entity
+      manager's API to execute the instruction.  The Engine
+      can effect a change in the state of the entity
+      manager.  (The engine was called 'System' in the
+      lecture class.)
+
+** Schematic Diagram
+
+
+[[./exam-diagram.png][exam-diagram.png]]
+
+The diagram above  shows the interconnections between the
+components.  Note the two types of arrows.  
+
+ - Data Flow arrows :: These are simple directional arrows
+      that denote the flow of data from a component
+      sequentially connected to another.
+
+ - Nested Function call arrows ::  These, two-way double
+      harpoon arrow denotes a nested API call.  The upper
+      harpoon is the call, and the lower harpoon denotes the
+      return.  In addition, the =?= denotes a call that is a
+      query; it doesn't change the state of the called
+      component.  A =!= on the other hand potentially
+      changes the state of the called component.
+
+** Datatypes
+
+There are two types of data that flow:
+
+ - Instruction :: An instruction is a dictionary with a
+      field called =cmd=.  Based on the command, there are
+      other fields in the dictionary.  The exact set of
+      fields are described below for each command.
+
+ - Result :: The result is a dictionary whose fields contain
+      the result of 'executing' an instruction by the
+      engine.  The exact set of fields depend on the
+      instruction.
+
+** Commands
+
+The  application has the commands: 
+
+  - =add-user=
+  - =del-user= 
+  - =show-users=
+  - =show-sessions=
+  - =add-role=
+  - =del-role=
+  - =set-name=
+  - =set-email=
+
+
+
+** Workflows
+
+A workflow is a particular wiring of components.  In this
+application, we are concerned with the workflow that wires
+the guard to the engine.  Of course, the guard and the
+engine internally call the entity manager. 
+
+  [[./runtime/workflows/guard_engine/index.org][guard-engine workflow]]
+
+** Routes
+A route is an implementation of the execution of a command
+across all the components in a workflow.
+
+

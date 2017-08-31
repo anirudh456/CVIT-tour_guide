@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-04-27 Thu 04:47 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title>Application specific constraints and Entity Managers</title>
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="VLEAD VLEAD" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../style/css/worg-style.css" />
+<link rel="stylesheet" type="text/css" href="../../style/css/override.css" />
+<link rel="icon" type="image/png" href="../../style/img/favicon/popl.png" />
+<script type="text/javascript" src="../../style/js/org-info.js">
+/**
+ *
+ * @source: ../../style/js/org-info.js
+ *
+ * @licstart  The following is the entire license notice for the
+ *  JavaScript code in ../../style/js/org-info.js.
+ *
+ * Copyright (C) 2012-2013 Free Software Foundation, Inc.
+ *
+ *
+ * The JavaScript code in this tag is free software: you can
+ * redistribute it and/or modify it under the terms of the GNU
+ * General Public License (GNU GPL) as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.  The code is distributed WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+ *
+ * As additional permission under GNU GPL version 3 section 7, you
+ * may distribute non-source (e.g., minimized or compacted) forms of
+ * that code without the copy of the GNU GPL normally required by
+ * section 4, provided you include this license notice and a URL
+ * through which recipients can access the Corresponding Source.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in ../../style/js/org-info.js.
+ *
+ */
+</script>
+
+<script type="text/javascript">
+
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+
+<!--/*--><![CDATA[/*><!--*/
+org_html_manager.set("TOC_DEPTH", "1");
+org_html_manager.set("LINK_HOME", "../../index.html");
+org_html_manager.set("LINK_UP", "../index.html");
+org_html_manager.set("LOCAL_TOC", "1");
+org_html_manager.set("VIEW_BUTTONS", "0");
+org_html_manager.set("MOUSE_HINT", "underline");
+org_html_manager.set("FIXED_TOC", "0");
+org_html_manager.set("TOC", "1");
+org_html_manager.set("VIEW", "info");
+org_html_manager.setup();  // activate after the parameters are set
+/*]]>*///-->
+</script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="../index.html"> UP </a>
+ |
+ <a accesskey="H" href="../../index.html"> HOME </a>
+</div><div id="content">
+<h1 class="title">Application specific constraints and Entity Managers</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline1">1. Introduction</a></li>
+<li><a href="#orgheadline2">2. Referential integrity constraints</a></li>
+<li><a href="#orgheadline3">3. Uniqueness integrity constraints</a></li>
+<li><a href="#orgheadline8">4. Summary of constraints</a>
+<ul>
+<li><a href="#orgheadline4">4.1. Object Level Constraints</a></li>
+<li><a href="#orgheadline5">4.2. Object Equality definition and Unique Key identification</a></li>
+<li><a href="#orgheadline6">4.3. Uniformity and Uniqueness constraints on entity sets</a></li>
+<li><a href="#orgheadline7">4.4. Application specific referential integrity constraints</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgheadline1" class="outline-2">
+<h2 id="orgheadline1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This document lists all 
+</p>
+
+<ul class="org-ul">
+<li>the application specific referential integrity
+constraints</li>
+
+<li>and the entity managers that ensure these constraints.</li>
+</ul>
+</div>
+</div>
+
+
+
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">2</span> Referential integrity constraints</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Every safe entity manager (persistent or volatile) must
+ensure referential integrity of the entities it aggregates.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline3" class="outline-2">
+<h2 id="orgheadline3"><span class="section-number-2">3</span> Uniqueness integrity constraints</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+This constraint is ensured by the safe Utility Entity
+Manager. 
+</p>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-orgheadline8" class="outline-2">
+<h2 id="orgheadline8"><span class="section-number-2">4</span> Summary of constraints</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4"><span class="section-number-3">4.1</span> Object Level Constraints</h3>
+<div class="outline-text-3" id="text-4-1">
+<dl class="org-dl">
+<dt><a href="../objects/email/index.html">Email</a></dt><dd><code>val</code> field is a valid email string.</dd>
+
+<dt><a href="../objects/name/index.html">Name</a></dt><dd><code>val</code> field is an alphabetic string.</dd>
+
+<dt><a href="../objects/role/index.html">Role</a></dt><dd><code>val</code> field is either "admin" or "user"</dd>
+
+<dt><a href="../objects/user/index.html">User</a></dt><dd><code>email</code> field is an <code>Email</code>, <code>name</code> field is a
+<code>Name</code>, and <code>roles</code> field is a list of =Role=s.</dd>
+
+<dt><a href="../objects/session/index.html">Session</a></dt><dd><code>user</code> field is a <code>User</code>, <code>key</code> field is a
+String and <code>role</code> field is <code>Role</code>.  Furthermore, a
+session's role must occur in the list of roles of the
+session's user.  See test case
+<code>test_user_role_mismatch</code> in the <a href="../objects/session/tests/create_session_exc.html">TestCreateSessionExc</a>
+class that demonstrates this constraint.</dd>
+</dl>
+
+
+<p>
+The object level constraints are specified when the object's
+class is defined using <code>PropertyClassFactory.mk_class</code>.   
+</p>
+
+<p>
+The constraints are checked every time the object is
+created. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline5" class="outline-3">
+<h3 id="orgheadline5"><span class="section-number-3">4.2</span> Object Equality definition and Unique Key identification</h3>
+<div class="outline-text-3" id="text-4-2">
+<dl class="org-dl">
+<dt><a href="../objects/email/index.html">Email</a></dt><dd>Two emails are considered equal if their <code>val</code>
+     fields are equal.  <code>val</code> is the unique key.</dd>
+
+<dt><a href="../objects/name/index.html">Name</a></dt><dd>Two Names are considered equal if their <code>val</code>
+     fields are equal. <code>val</code> is the unique key.</dd>
+
+<dt><a href="../objects/role/index.html">Role</a></dt><dd>Two roles are considered equal if their <code>val</code>
+     fields are equal.  <code>val</code> is the unique key.</dd>
+
+<dt><a href="../objects/user/index.html">User</a></dt><dd>Two users are considered equal if their <code>email</code>
+     fields are equal.  <code>email</code> is the unique key.</dd>
+
+<dt><a href="../objects/session/index.html">Session</a></dt><dd>Two sessions are considered equal if their
+<code>key</code> fields are equal.  <code>key</code> is the unique key.</dd>
+</dl>
+
+
+
+<p>
+The object equality definition and unique key identification
+are specified when the object's class is defined using
+<code>PropertyClassFactory.mk_class</code>.
+</p>
+
+<p>
+They are checked every time two objects are compared for
+equality.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline6" class="outline-3">
+<h3 id="orgheadline6"><span class="section-number-3">4.3</span> Uniformity and Uniqueness constraints on entity sets</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+These are constraints in the aggregates of entities:
+No two entities in the aggregate have the same unique key.
+</p>
+
+<p>
+In the application there are only two primary aggregates:
+</p>
+
+<dl class="org-dl">
+<dt>User set</dt><dd><ol class="org-ol">
+<li>All objects in the User set are instances of
+<code>User</code>.  [Uniformity]</li>
+
+<li>No two objects in the user set have the same
+<code>email</code> field.  [Uniqueness]</li>
+</ol></dd>
+
+<dt>Session set</dt><dd><ol class="org-ol">
+<li>All objects in the Session set are instances of
+<code>Session</code>.   [Uniformity]</li>
+
+<li>No two objects in the Session set have the same
+<code>key</code> field.  [Uniqueness]</li>
+</ol></dd>
+</dl>
+
+
+<p>
+In the implementation, this is enforced by a more general
+manner.  
+</p>
+
+<ul class="org-ul">
+<li>The uniformity constraint is implemented by the
+<a href="../utils/entitymgrs/volatile/unsafe/index.html">UnsafeVolatileEntityMgr</a> utility class.</li>
+
+<li>The uniqueness constraint is implemented by the
+<a href="../utils/entitymgrs/volatile/safe/index.html">SafeVolatileEntityMgr</a> utility class.</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-orgheadline7" class="outline-3">
+<h3 id="orgheadline7"><span class="section-number-3">4.4</span> Application specific referential integrity constraints</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+These are constraints on the user and session aggregates.
+</p>
+
+<dl class="org-dl">
+<dt>1. Session-user referential integrity constraint</dt><dd>If
+<code>s</code> is a session in the session aggregate, then the
+<code>s</code>'s user is present in the user aggregate.</dd>
+</dl>
+
+<p>
+This constraint is implemented by the application specific
+<a href="./svem/index.html">EntityMgr</a> class in the <a href="./svem/index.html">svem</a> module. 
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: <span class="timestamp-wrapper"><span class="timestamp">[2017-04-25 Tue]</span></span></p>
+<p class="author">Author: VLEAD VLEAD</p>
+<p class="date">Created: 2017-04-27 Thu 04:47</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

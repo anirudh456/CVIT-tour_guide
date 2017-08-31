@@ -1,0 +1,90 @@
+#+title: Test that check only admin can add user
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-11 Tue]
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Test
+  =TestAddUsers= object has a holds an instance of the =ShowUsers= component
+  against the field =component=.  This test invokes the =do= method on the
+  component.
+
+** Imports
+#+BEGIN_SRC python :tangle test_check_auth.py
+import unittest
+from runtime.objects.user.user import User
+from runtime.objects.session.session import Session
+from runtime.objects.email.email import Email
+from runtime.objects.name.name import Name
+from runtime.objects.role.role import Role
+from runtime.exceptions.app.exception import AppException
+from runtime.exceptions.arity.exception import ArityException
+from runtime.exceptions.keymismatch.exception import KeyMismatchException
+from runtime.components.guard.add_user.tests.harness import TestHarness
+from runtime.datatypes.cmd.cmd import Cmd
+
+#+END_SRC
+
+
+** Test Case
+
+   Imports the TestHarness which sets up the component. 
+   This test creates an instruction with cmd =add_user=, 
+   a new session with a non admin and a newly created user. 
+   The guard's do method fails and raises AppException.
+
+   Following are the steps to be taken:
+    - Create a new user with user role
+    - Add it to User set using entity manager
+    - Create a session with this user in it and a random key
+    - Add this session to the Session set using entity manager
+    - Create a new user object
+    - Create the instruction datatypes for =add_user= route with
+      the above session and to add this newly created user
+    - Call the guard's with this instruction.
+
+The test should raise an exception with the method itself catching it.
+
+#+BEGIN_SRC python :tangle test_check_auth.py
+class TestCheckAuth(TestHarness):
+
+    def test_check_auth(self):
+        print "test_check_auth"
+
+        user = User(
+            name=Name(val="Hey Name"),
+            email=Email(val="h@g.c"),
+            roles=[Role.user]
+        )
+          
+        self.component.em.add_user(user)
+
+        # New Session
+        session = Session(user=user, role=Role.user, key="asdfdssdf")
+
+        self.component.em.add_session(session)
+
+        newUser = User(
+            name=Name(val="A new User"), 
+            email=Email(val="new.user@something.com"),
+            roles=[Role.user]
+        )
+        
+        instr = {
+            'cmd': Cmd.add_user, 
+            'session': session, 
+            'data': {
+                'user' : newUser
+            }
+        }
+
+        guard = self.component
+
+        with self.assertRaises(AppException):
+            result = guard.do(instr)
+              
+
+#+END_SRC
+

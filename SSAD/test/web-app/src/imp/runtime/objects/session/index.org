@@ -1,0 +1,41 @@
+#+TITLE: Session Object
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Session
+  A session stores the user information.  The session object
+  defines the set of operations allowed by the system.
+
+* Constraint on the session object
+
+ 1.  A session must have a user, a key and a role.
+ 
+ 2.  A session's role must occur in the list of roles of the
+    session's user.
+
+
+* Implementation
+#+BEGIN_SRC python :tangle session.py
+from runtime.utils.type_utils.type_utils import is_str
+from runtime.utils.factories.property_class_factory import PropertyClassFactory
+from runtime.objects.user.user import User
+from runtime.objects.role.role import Role
+
+Session = PropertyClassFactory.mk_class("Session", ["key"], 
+            user=User.is_inst, role=Role.is_inst, 
+            key=is_str, inv=(lambda obj, args: \
+                              args['role'] in \
+                              args['user'].get('roles')))
+#+END_SRC
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "session package"
+
+#+END_SRC
+

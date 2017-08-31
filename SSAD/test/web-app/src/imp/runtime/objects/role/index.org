@@ -1,0 +1,61 @@
+#+TITLE: Role Object
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-25 Tue]
+#+SETUPFILE: ../../../org-templates/level-3.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Role
+   =Role= is an entity that has a field =name= which is an alphabetic string
+
+
+#+BEGIN_SRC python :tangle role.py
+from runtime.utils.factories.property_class_factory import PropertyClassFactory
+def is_role_str(a):
+   return a == "user" or a == "admin"
+
+Role = PropertyClassFactory.mk_class("Role", ['val'], val=is_role_str)
+
+Role.admin = Role(val="admin")
+Role.user = Role(val="user")
+Role.is_admin = lambda self: self.val == "admin"
+Role.is_user = lambda self: self.val == "user"
+
+#+END_SRC
+
+* Test Role
+#+BEGIN_SRC python :tangle test_role.py
+import unittest
+from unittest import TestCase
+from runtime.objects.role.role import Role
+
+class TestRole(TestCase):
+    TESTING = True
+    def test_instantiate_role(self):
+        print "test_instantiate_role"
+        a_role = Role(val="admin")
+        self.assertEqual(Role.is_inst(a_role), True)
+        self.assertEqual(a_role.get("val"), "admin")
+        self.assertRaises(TypeError, Role, my_name="admin123")
+
+    def test_set_and_get_role(self):
+        print "test_sets_on_role"
+        u_role = Role(val="user")
+        self.assertEqual(u_role.get("val"), "user")
+        u_role.set(val="admin")
+        self.assertEqual(u_role.get("val"), "admin")
+
+#+END_SRC
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "role package"
+
+#+END_SRC
+
+
+
+

@@ -1,0 +1,166 @@
+#+TITLE: =show_user_details= route of the =Guard= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-10 Mon]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+This is the specification and implementation of the
+=show_user_details= route of the =Guard= component.  
+
+* Checks
+
+ - TypeCheck :: Check whether the instruction consists of the command
+                =show_user_details= and additionally contains a
+                session object and a dictionary 'data' which has
+                =email= object which is an instance of =Email=.  The
+                typecheck may be implemented by consulting the
+                [[../../../datatypes/instr/index.org][instruction datatype]] specification.
+
+
+ - AuthCheck :: Check whether the role in the instruction's session is
+                =admin= or the user in the session and the user whose
+                details are to be viewed are the same
+
+
+ - StateCheck :: Check whether the session in the
+      instruction is indeed an entity currently present in
+      the entity manager's session aggregate.
+
+* Implementation
+
+** Imports and class =ShowDetails=
+#+BEGIN_SRC python :tangle show_user_details.py
+import traceback
+from  runtime.exceptions.app.exception import AppException
+from runtime.utils.type_utils.type_utils import check_pred
+from runtime.objects.role.role import Role
+from runtime.objects.user.user import User
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.session.session import Session
+from runtime.datatypes.instr.show_user_details.show_user_details_instr import ShowDetailsInstr
+
+class ShowDetails:
+
+#+END_SRC
+
+** The type structure of the =show_user_details= route
+
+The =show_user_details= route is a dictionary with 'cmd' equal to
+=Cmd.show_user_details= a dictionay 'data' which has an object which is an instance of
+=Email= and a 'session' that is an instance of
+=Session=.
+
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.show_sessions, 'session': Session.is_inst, 'data':{'email':Email.is_inst}}
+#+END_EXAMPLE
+
+** The =do= method
+The =do= method simply does all the checks.  
+#+BEGIN_SRC python :tangle show_user_details.py
+    @staticmethod 
+    def do(component, instr):
+        print "show_user_details: %s" % instr
+
+        ShowDetails.check_type(instr)
+        ShowDetails.check_auth(component, instr)
+        ShowDetails.check_state(component, instr)
+        return instr
+
+#+END_SRC
+
+* Checks
+** Type checks
+#+BEGIN_SRC python :tangle show_user_details.py
+    @staticmethod
+    def check_type(instr):
+        check_pred(ShowDetailsInstr.is_inst)(instr)
+        return instr
+
+#+END_SRC
+** Authorization check
+
+This function checks if the user in the session of the instruction
+has =admin= role .  If not,it checks whether the user in the session
+and the user whose details are to be shown is the same.If both are false,
+it raises an exception.
+
+    1. Retrieve the session from the instr
+ 
+    2. Retrieve the user from the session
+
+    3. Retrieve the role from the session
+
+    4. If the role is not an admin role (=Role.admin=) then,
+
+    5. Retrieve the user from data from the instr and check whether 
+       the user in session is same as the user given in data.
+
+    6. If both are false, then raise an exception
+
+    7. The email by which the user is recognised in the instruction
+       should be present in the email field of one of the users in the
+       entity.
+       
+    7. Otherwise return the instruction.
+
+#+BEGIN_SRC python :tangle show_user_details.py
+    @staticmethod
+    def check_auth(obj, instr):
+        session = instr['session']
+        userlist = obj.em.get_all(User)
+        email = instr['data']['email']
+        email = email.get('val')
+        emails = []
+        for i in range(len(userlist)):
+            emails.append(userlist[i].get("email").get("val"))
+        role = session.get('role')
+        if role != Role.admin:
+            if email in emails:
+                return instr
+            else: 
+                raise AppException(op="show_user_details.check_auth",
+                    msg="No user found")
+        else:
+            return instr
+        
+#+END_SRC
+
+
+** State check
+
+This check passes if the session is already an entity
+present in the entity manager.  Otherwise an =AppException=
+is raised.
+
+    1. Retrieve the session from the instruction.
+ 
+    2. Retrieve the entity manager from the component.
+ 
+    3. Check if the session is present in the entity
+       manager. 
+
+    4. If the session is not present, then raise an
+       exception.  The instruction's session must always be
+       in the session aggregate managed by the entity manager.
+
+#+BEGIN_SRC python :tangle show_user_details.py
+
+    @staticmethod
+    def check_state(component, instr):
+        if not component.em.is_present(instr['session']):
+            raise AppException(op="show_user_details.check_state",
+                                   msg="session is not in the entity manager")
+
+        return instr
+
+#+END_SRC
+
+* Package                                                       :boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.guard.show_user_details package"
+#+END_SRC
+

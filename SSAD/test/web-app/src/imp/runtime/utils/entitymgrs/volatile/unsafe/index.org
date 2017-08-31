@@ -1,0 +1,88 @@
+#+title:  Unsafe Volatile Entity Manager
+
+* Introduction
+
+The purpose of the Unsafe Volatile Entity Manager (=UVEM=
+for short) is twofold:
+
+ 1. To provide a factory method (=mk_volatile_entry=) for
+    creating classes (entity classes).
+
+ 2. To manage a volatile store of instances of those
+    classes via =add=, =delete=, =update= and other
+    methods. 
+
+Instances of UVEM carry an instance of a volatile store
+(dictionary mapping entity classes to lists).  No checks are
+made when inserting or deleting entities; as a result the
+entity aggregates may have duplicates or inconsistent or
+non-uniform data (data or multiple entity types, or
+arbitrary objects).
+
+* Implementation 
+#+BEGIN_SRC python :tangle uvem.py
+
+class UnsafeVolatileEntityMgr():
+    def __init__(self):
+        # this store is volatile
+        self.db = {}
+
+    def mk_volatile_entity(self, cls):
+        cls = type(cls.__name__, (object,), dict(cls.__dict__))
+        self.db[cls] = []
+        return cls
+
+
+    def register_as_entity(self, cls):
+        self.db[cls] = []
+
+
+    # tests if entity is in aggregate
+    def is_present(self, entity):
+        return entity in self.db[entity.__class__]
+
+
+
+    # assumes entity is not present in aggregate
+    def unsafe_add(self, entity):
+        entity_set = self.db[entity.__class__]
+        entity_set.append(entity)
+
+    # assumes entity is in aggregate
+    def unsafe_delete(self, entity):
+        entity_set = self.db[entity.__class__]
+        entity_set.remove(entity)
+
+    # assumes entity is in aggregate
+    def unsafe_update(self, entity, **args):
+        pass
+
+    # assumes cls is the entity class    
+    def get_all(self, cls):
+        return self.db[cls]
+
+    # usage: apply_filters(User, email=e1, name=n1)
+    def apply_filters(self, cls, **args):
+        entities = self.get_all(cls)
+
+        for key, val in  args.iteritems():
+           entities = filter(lambda e: e.get(key) == val, entities)
+        return entities
+
+#+END_SRC
+
+
+* Use as a parent class
+=UVEM= may be used as a parent of a child class.  The child
+class should invoke =UVEM='s =__init__= constructor with a
+=self= argument in its own constructor as in the following
+example.  It should override all the methods of =UVEM=. 
+
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.utils.entitymgrs.unsafe package"
+
+#+END_SRC
+

@@ -1,0 +1,102 @@
+#+title:  Utility Safe Volatile Entity Manager
+#+AUTHOR: VLEAD
+#+DATE: [2017-04-22 Sat] 
+#+SETUPFILE: ../../../../../org-templates/level-5.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+
+* Implementation
+
+** Imports
+#+BEGIN_SRC python :tangle svem.py
+
+import copy
+from runtime.utils.type_utils.type_utils import check
+from runtime.utils.entitymgrs.volatile.unsafe.uvem import UnsafeVolatileEntityMgr
+from  runtime.utils.entitymgrs.volatile.volatile_entity_mgr_exception import VolatileEntityMgrException
+
+#+END_SRC
+
+** Initialization
+#+BEGIN_SRC python :tangle svem.py
+class SafeVolatileEntityMgr(UnsafeVolatileEntityMgr):
+    def __init__(self):
+       UnsafeVolatileEntityMgr.__init__(self)
+
+#+END_SRC
+
+
+** Safe add
+Adds only if =entity= is not present in the aggregate.
+Otherwise, throws an "entity already present" exception.
+
+#+BEGIN_SRC python :tangle svem.py
+    def safe_add(self, entity):
+        check(lambda e: not self.is_present(e),
+              VolatileEntityMgrException(op="safe_add", 
+                  msg="entity %s already present" % entity.to_client()))(entity)
+
+        self.unsafe_add(entity)
+
+#+END_SRC
+
+** Safe delete
+Deletes  only if =entity= is  present in the aggregate.
+Otherwise, throws an "entity not present" exception.
+
+#+BEGIN_SRC python :tangle svem.py
+    def safe_delete(self, entity):
+        check(self.is_present, 
+              VolatileEntityMgrException(op="safe_delete", 
+                  msg="entity %s not present" % entity.to_client()))(entity)
+
+        self.unsafe_delete(entity)
+
+#+END_SRC
+
+** Safe update
+
+Updates =entity= with the new mappings specifed in =args=.
+
+   1. =entity= must be present in the aggregate.
+
+   2. First a =new_entity= is built by copying =entity=.  
+
+   3. Then =new_entity= is set with =args=.   
+
+   4. If this results in =new_entity= being equal to
+      =entity=, then 
+         
+          a)  =entity= is deleted
+          b)  =new_entity= is added
+
+      Otherwise:
+ 
+          c) =new_entity= is added in a safe manner
+          d) =entity= is deleted in an unsafe manner
+
+#+BEGIN_SRC python :tangle svem.py
+
+    def safe_update(self, entity, **args):
+        check(self.is_present,    # 1
+              VolatileEntityMgrException(op="safe_update", 
+                  msg="entity %s not present" % entity.to_client()))(entity)
+
+        new_entity=copy.copy(entity) #2
+        new_entity.set(**args)       #3
+        if new_entity == entity:     #4
+            self.unsafe_delete(entity)  #a
+            self.unsafe_add(new_entity) #b
+        else:
+            self.safe_add(new_entity)   #c
+            self.unsafe_delete(entity)  #d
+#+END_SRC
+
+
+* Package 														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.utils.entitymgrs.volatile.safe package"
+#+END_SRC
+

@@ -1,0 +1,67 @@
+#+TITLE: =show_user_details= route of the =Engine= component
+#+AUTHOR: VLEAD
+#+DATE: [2017-07-7 Mon]
+#+SETUPFILE: ../../../../org-templates/level-4.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction  
+
+  This is the specification and implementation of the =show_user_details=
+  route of the =Engine= component.
+
+
+* Implementation
+
+** Imports and class =ShowDetails=
+#+BEGIN_SRC python :tangle show_user_details.py
+import traceback
+
+from runtime.datatypes.cmd.cmd import Cmd
+from runtime.objects.user.user import User
+
+class ShowDetails:
+
+#+END_SRC
+
+** The type structure of the =show_user_details= route
+
+   The =show_user_details= route is a dictionary with 'cmd' equal to
+   =Cmd.show_user_details= a dictionary of object =email= that is an
+   instance of =Email= and a 'session' that is an instance of
+   =Session=.
+#+BEGIN_EXAMPLE
+instr = {'cmd': Cmd.get_user_by_email, 'session': Session.is_inst, 'data': {'email':Email.is_inst}}
+#+END_EXAMPLE
+** The =do= method
+The =do= method performs the get user operation on the entities.Should return a dictionary
+ with 'result' as the user and 'instr' as the instruction passed. 
+
+#+BEGIN_SRC python :tangle show_user_details.py
+    @staticmethod 
+    def do(obj, instr):
+        print "show_user_details: %s" % instr
+        userlist = obj.em.get_all(User)
+        email = instr['data']['email']
+        email = email.get("val")
+        for i in range(len(userlist)):
+            check = userlist[i].get("email").get("val")
+            if check == email:
+                user = userlist[i]
+                roles_of_user = user.get('roles')
+                name_of_user = user.get('name').get('val')
+                email_of_user = check
+                return {'instr': instr, 'result': {'roles_of_user':roles_of_user,
+                                                   'name_of_user':name_of_user,
+                                                   'email_of_user':email_of_user}}
+
+#+END_SRC
+
+
+* Package														:boilerplate:
+#+BEGIN_SRC python :eval no :tangle __init__.py
+print "runtime.components.engine.show_user_details package"
+#+END_SRC
+
+
