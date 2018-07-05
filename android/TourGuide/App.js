@@ -1,5 +1,9 @@
 import React from 'react';
 import { ScrollView, TextInput, TouchableHighlight, Image, Alert, Button, StyleSheet, Text, View } from 'react-native';
+
+// import Sound from 'react-native-sound';
+import {AudioRecorder, AudioUtils} from 'react-native-audio';
+
 import Location from './Location';
 import Welcome from './Welcome';
 import Story from './Story';
@@ -9,7 +13,7 @@ import EventEmitter2 from 'eventemitter2'
 window.EventEmitter2 = EventEmitter2.EventEmitter2
 var RosClient = require("roslibjs-client");
 var client = new RosClient({
-  url: "ws://192.168.43.137:9090"
+  url: "ws://10.2.131.218:9090"
 });
 client.on("connected", function() {
   console.log("Connection established!");
@@ -20,6 +24,16 @@ client.on("connected", function() {
 });
 client.on("disconnected", function() {
   console.log("Connection disconnected!");
+});
+
+// For audio recording 
+let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
+
+AudioRecorder.prepareRecordingAtPath(audioPath, {
+  SampleRate: 44100,
+  Channels: 1,
+  AudioQuality: "Low",
+  AudioEncoding: "aac"
 });
 
 
@@ -39,7 +53,7 @@ function onPressLearnMore() {
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {currentPage: 'Welcome',text:"type to talk to robot"};
+    this.state = {currentPage: 'Welcome',text:"type to talk to robot", content_duration: ''};
     var ws = new WebSocket('ws://10.42.0.1:9999');
 
     ws.onopen = () => {
@@ -73,19 +87,19 @@ export default class App extends React.Component {
               Select a time limit on your tour.
               </Text>
             <Button
-              onPress={() => {this.setState({currentPage: 'sendMessage'})}}
+              onPress={() => {this.setState({currentPage: 'sendMessage' , content_duration: '1'})}}
               title="30 min"
               color="#841584"
               accessibilityLabel="Comes to the current location and then takes the message to specified location"
             />
             <Button
-              onPress={() => {this.setState({currentPage: 'sendMessage'})}}
+              onPress={() => {this.setState({currentPage: 'sendMessage', content_duration: '2'})}}
               title="45 min"
               color="#841584"
               accessibilityLabel="Comes to the current location and then takes the message to specified location"
             />
             <Button
-              onPress={() => {this.setState({currentPage: 'sendMessage'})}}
+              onPress={() => {this.setState({currentPage: 'sendMessage', content_duration: '3'})}}
               title="60 min"
               color="#841584"
               accessibilityLabel="Comes to the current location and then takes the message to specified location"
@@ -121,21 +135,10 @@ export default class App extends React.Component {
           </View>
           <View style={styles.topPageContainer}>
             <View style={styles.pageContainer}>
-              <Story />
+              <Story 
+              location_id={10}
+              duration={this.state.content_duration}/>
             </View>
-          </View>
-          <View>
-          <TextInput
-              style={styles.input}
-              textAlign="center"
-              onSubmitEditing={this.submitEdit}
-              onChangeText={(text) => this.setState({text})}
-               />
-            <Button
-             onPress={this.onSubmitEdit}
-              title="submit"
-              color="#841584"
-            />
           </View>
         </View>
       );
