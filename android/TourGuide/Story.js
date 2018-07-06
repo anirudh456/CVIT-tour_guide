@@ -90,7 +90,16 @@ export default class Story extends React.Component{
       );
     }
 
-    else if(this.state.curent_location_id == '' || this.state.next_location_id == this.state.curent_location_id){
+    else if(this.state.curent_location_id == ''){
+      return (
+        <View style={styles.container}>
+          <Text style={styles.instructions}>
+            Starting the tour
+          </Text>
+        </View>
+      );
+    }
+    else if(this.state.next_location_id == this.state.curent_location_id){
       return (
         <View style={styles.container}>
           <Text style={styles.instructions}>
@@ -99,7 +108,6 @@ export default class Story extends React.Component{
         </View>
       );
     }
-
     else if(this.state.curent_location_id != '' || this.state.next_location_id != this.state.curent_location_id){
       return (
         <View style={styles.container}>

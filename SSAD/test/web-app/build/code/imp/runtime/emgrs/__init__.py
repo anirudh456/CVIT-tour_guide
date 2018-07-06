@@ -1,2 +1,0 @@
-
-print "volatile package"

@@ -98,12 +98,7 @@ export default class App extends React.Component {
               color="#841584"
               accessibilityLabel="Comes to the current location and then takes the message to specified location"
             />
-            <Button
-              onPress={() => {this.setState({currentPage: 'sendMessage', content_duration: '3'})}}
-              title="60 min"
-              color="#841584"
-              accessibilityLabel="Comes to the current location and then takes the message to specified location"
-            />
+            
             <View>
             <TextInput
               style={styles.input}
