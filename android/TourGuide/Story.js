@@ -22,7 +22,7 @@ export default class Story extends React.Component{
     this.state={
       labStory : '',
       labName: '',
-      next_location_id: this.props.location_id-1,
+      next_location_id: this.props.location_id,
       curent_location_id: '',
     }
   }
@@ -90,7 +90,7 @@ export default class Story extends React.Component{
       );
     }
 
-    else if( this.state.next_location_id==sthis.props.location_id-1){
+    else if( this.state.next_location_id==this.props.location_id && this.state.curent_location_id == ''){
       return (
         <View style={styles.container}>
           <Text style={styles.instructions}>

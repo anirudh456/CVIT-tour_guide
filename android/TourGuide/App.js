@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     backgroundColor: '#fff',
-    height: '70%',
-    width: '70%',
+    height: '100%',
+    width: '100%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
