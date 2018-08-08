@@ -4,7 +4,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Button
+  Button,
+  TextInput,
+  ScrollView
 } from 'react-native';
 
 
@@ -22,14 +24,14 @@ export default class Story extends React.Component{
     this.state={
       labStory : '',
       labName: '',
-      next_location_id: this.props.location_id,
-      curent_location_id: '',
+      next_location_id: 1,
+      curent_location_id: -1,
+      direction: ''
     }
   }
 
   componentDidMount(){
 
-    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.duration})
     var listener = client.topic.subscribe('/tour_guide_data', "std_msgs/String", (message) => {
         message = JSON.parse(message.data)
         console.log(message)
@@ -37,24 +39,10 @@ export default class Story extends React.Component{
         this.setState({
           labStory: message.story,
           labName: message.name,
-          curent_location_id: ''
+          direction: message.direction
         })
       });
-    
-    var listener = client.topic.subscribe('/location', "std_msgs/String", (message) => {
 
-      console.log("Location",message);
-        location = parseInt(message.data)
-        this.setState({
-          curent_location_id: location
-        })
-
-        if(this.state.next_location_id == this.state.curent_location_id && this.state.curent_location_id != ''){
-            client.topic.publish('/speaker', 'std_msgs/String', {'data':this.state.labStory})  
-        }
-
-
-      });
 
     client.on("disconnected", function() {
       console.log("Connection disconnected!");
@@ -63,22 +51,29 @@ export default class Story extends React.Component{
   }
 
   nextPage = () => {
-    this.setState({next_location_id: this.state.next_location_id + 1 , curent_location_id: ''});
-    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.duration})
+    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"DIRECTION$"+(this.state.curent_location_id + 1)})
+    this.setState({next_location_id: this.state.curent_location_id + 1 , curent_location_id: -1});
     
   };
-  
+
+  onSubmitEdit = () => {
+
+    this.setState({next_location_id: -1 , curent_location_id: this.state.next_location_id});
+    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.duration})
+
+  };
 
   render() {
     console.log("Next place",this.state.next_location_id )
-    if(this.state.next_location_id == this.state.curent_location_id && this.state.curent_location_id != ''){
+    if(this.state.next_location_id == -1){
       return (
         <View style={styles.container}>
+          <View>
           <Text style={styles.welcome}>
           reached: {this.state.labName}
           </Text>
           <Text style={styles.instructions}>
-            Story: {this.state.labStory ? this.state.labStory : "No story for this location"}
+            Story: {this.state.labStory ? this.state.labStory : "Loading"}
           </Text>
           <Button
             onPress={() => {this.nextPage()}}
@@ -86,40 +81,51 @@ export default class Story extends React.Component{
             color="#841584"
             accessibilityLabel="Comes to the current location and tells the story"
           />
+          </View>
         </View>
       );
     }
 
-    else if( this.state.next_location_id==this.props.location_id && this.state.curent_location_id == ''){
+    else if( this.state.next_location_id == 1 && this.state.curent_location_id == -1){
       return (
         <View style={styles.container}>
           <Text style={styles.instructions}>
             Starting the tour
           </Text>
+          <View>
+            <Button
+             onPress={this.onSubmitEdit}
+              title="Lets go!!"
+              color="#841584"
+            />
+          </View>
         </View>
       );
     }
-    else if(this.state.curent_location_id == '' || this.state.next_location_id == this.state.curent_location_id){
+    else if(this.state.curent_location_id == -1 && this.state.next_location_id != 1){
       return (
         <View style={styles.container}>
           <Text style={styles.instructions}>
-            Going to the next place
+            Lets go to the next place          
           </Text>
-        </View>
-      );
-    }
-    else if(this.state.curent_location_id != '' || this.state.next_location_id != this.state.curent_location_id){
-      return (
-        <View style={styles.container}>
-          <Text style={styles.instructions}>
-            Ooops looks like we went to the wrong locatoion, please take me back to  
-            {'\n'}            
-            {this.state.labName}
-          </Text>
-        </View>
-      );
-    }
+		  <ScrollView>
+			{
+				this.state.direction.split(';').map( item => {
+					return (<Text> {item} </Text>);
+				})
+			}
+		  </ScrollView>
 
+          <View>
+            <Button
+             onPress={this.onSubmitEdit}
+              title="Reached"
+              color="#841584"
+            />
+          </View>
+        </View>
+      );
+    }
 
 
   }

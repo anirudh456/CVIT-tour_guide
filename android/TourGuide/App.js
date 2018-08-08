@@ -131,7 +131,6 @@ export default class App extends React.Component {
           <View style={styles.topPageContainer}>
             <View style={styles.pageContainer}>
               <Story 
-              location_id={10}
               duration={this.state.content_duration}/>
             </View>
           </View>
