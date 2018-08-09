@@ -1,4 +1,5 @@
 import React from 'react';
+// import React from 'react';
 import { Image, Alert, Button, StyleSheet, Text, View, Picker } from 'react-native';
 
 export default class Location extends React.Component {

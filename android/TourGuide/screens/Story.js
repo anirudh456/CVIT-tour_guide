@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import React from 'react';
 import {
   Platform,
   StyleSheet,
@@ -6,7 +7,7 @@ import {
   View,
   Button
 } from 'react-native';
-
+// import EventEmitter2 from 'eventemitter2'
 
 import EventEmitter2 from 'eventemitter2'
 window.EventEmitter2 = EventEmitter2.EventEmitter2
@@ -22,8 +23,9 @@ export default class Story extends React.Component{
     this.state={
       labStory : '',
       labName: '',
-      next_location_id: this.props.location_id,
-      curent_location_id: '',
+      next_location_id: 1,
+      curent_location_id: -1,
+      direction: ''
     }
   }
 
@@ -41,20 +43,7 @@ export default class Story extends React.Component{
         })
       });
     
-    var listener = client.topic.subscribe('/location', "std_msgs/String", (message) => {
-
-      console.log("Location",message);
-        location = parseInt(message.data)
-        this.setState({
-          curent_location_id: location
-        })
-
-        if(this.state.next_location_id == this.state.curent_location_id && this.state.curent_location_id != ''){
-            client.topic.publish('/speaker', 'std_msgs/String', {'data':this.state.labStory})  
-        }
-
-
-      });
+    
 
     client.on("disconnected", function() {
       console.log("Connection disconnected!");
@@ -63,22 +52,29 @@ export default class Story extends React.Component{
   }
 
   nextPage = () => {
-    this.setState({next_location_id: this.state.next_location_id + 1 , curent_location_id: ''});
-    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.duration})
-    
+    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"DIRECTION$"+(this.state.curent_location_id + 1)})
+    this.setState({next_location_id: this.state.curent_location_id + 1 , curent_location_id: -1});  
   };
-  
+  onSubmitEdit = () => {
+
+    this.setState({next_location_id: -1 , curent_location_id: this.state.next_location_id});
+    console.log(this.props.navigation.state.params.content_duration);
+    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.navigation.state.params.content_duration})
+
+};
 
   render() {
     console.log("Next place",this.state.next_location_id )
-    if(this.state.next_location_id == this.state.curent_location_id && this.state.curent_location_id != ''){
+    console.log("Next place",this.state.curent_location_id )
+    if(this.state.next_location_id == -1){
       return (
         <View style={styles.container}>
+          <View>
           <Text style={styles.welcome}>
           reached: {this.state.labName}
           </Text>
           <Text style={styles.instructions}>
-            Story: {this.state.labStory ? this.state.labStory : "No story for this location"}
+            Story: {this.state.labStory ? this.state.labStory : "Loading"}
           </Text>
           <Button
             onPress={() => {this.nextPage()}}
@@ -86,9 +82,10 @@ export default class Story extends React.Component{
             color="#841584"
             accessibilityLabel="Comes to the current location and tells the story"
           />
+          </View>
         </View>
       );
-    }
+}
 
     else if( this.state.next_location_id==this.props.location_id && this.state.curent_location_id == ''){
       return (
@@ -96,30 +93,56 @@ export default class Story extends React.Component{
           <Text style={styles.instructions}>
             Starting the tour
           </Text>
+          <View>
+            <Button
+             onPress={this.onSubmitEdit}
+              title="Lets go!!"
+              color="#841584"
+            />
+</View>
         </View>
       );
     }
-    else if(this.state.curent_location_id == '' || this.state.next_location_id == this.state.curent_location_id){
+    else if( this.state.next_location_id == 1 && this.state.curent_location_id == -1){
       return (
         <View style={styles.container}>
           <Text style={styles.instructions}>
-            Going to the next place
+            Starting the tour
           </Text>
+          <View>
+            <Button
+             onPress={this.onSubmitEdit}
+              title="Lets go!!"
+              color="#841584"
+            />
+          </View>
         </View>
       );
-    }
-    else if(this.state.curent_location_id != '' || this.state.next_location_id != this.state.curent_location_id){
-      return (
-        <View style={styles.container}>
-          <Text style={styles.instructions}>
-            Ooops looks like we went to the wrong locatoion, please take me back to  
-            {'\n'}            
-            {this.state.labName}
-          </Text>
-        </View>
-      );
-    }
+}
+else if(this.state.curent_location_id == -1 && this.state.next_location_id != 1){
+  return (
+    <View style={styles.container}>
+      <Text style={styles.instructions}>
+        Lets go to the next place          
+      </Text>
+  <ScrollView>
+  {
+    this.state.direction.split(';').map( item => {
+      return (<Text> {item} </Text>);
+    })
+  }
+  </ScrollView>
 
+      <View>
+        <Button
+         onPress={this.onSubmitEdit}
+          title="Reached"
+          color="#841584"
+        />
+      </View>
+    </View>
+  );
+}
 
 
   }
