@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import React from 'react';
 import {
   Platform,
   StyleSheet,
@@ -8,7 +9,7 @@ import {
   TextInput,
   ScrollView
 } from 'react-native';
-
+// import EventEmitter2 from 'eventemitter2'
 
 import EventEmitter2 from 'eventemitter2'
 window.EventEmitter2 = EventEmitter2.EventEmitter2
@@ -52,19 +53,20 @@ export default class Story extends React.Component{
 
   nextPage = () => {
     client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"DIRECTION$"+(this.state.curent_location_id + 1)})
-    this.setState({next_location_id: this.state.curent_location_id + 1 , curent_location_id: -1});
-    
-  };
 
+    this.setState({next_location_id: this.state.curent_location_id + 1 , curent_location_id: -1});  
+  };
   onSubmitEdit = () => {
 
     this.setState({next_location_id: -1 , curent_location_id: this.state.next_location_id});
-    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.duration})
+    console.log(this.props.navigation.state.params.content_duration);
+    client.topic.publish('/tour_guide', 'std_msgs/String', {'data':"STORY$"+this.state.next_location_id+'$'+this.props.navigation.state.params.content_duration})
 
-  };
+};
 
   render() {
     console.log("Next place",this.state.next_location_id )
+    console.log("Next place",this.state.curent_location_id )
     if(this.state.next_location_id == -1){
       return (
         <View style={styles.container}>
@@ -84,7 +86,7 @@ export default class Story extends React.Component{
           </View>
         </View>
       );
-    }
+	}
 
     else if( this.state.next_location_id == 1 && this.state.curent_location_id == -1){
       return (
@@ -125,9 +127,30 @@ export default class Story extends React.Component{
           </View>
         </View>
       );
-    }
-
-
+	}
+	else if(this.state.curent_location_id == -1 && this.state.next_location_id != 1){
+	  return (
+	    <View style={styles.container}>
+	      <Text style={styles.instructions}>
+	        Lets go to the next place          
+	      </Text>
+		  <ScrollView>
+		  {
+		    this.state.direction.split(';').map( item => {
+		      return (<Text> {item} </Text>);
+		    })
+		  }
+		  </ScrollView>
+	      <View>
+	        <Button
+	         onPress={this.onSubmitEdit}
+	          title="Reached"
+	          color="#841584"
+	        />
+	      </View>
+	    </View>
+	  	);
+	}
   }
   
 }
